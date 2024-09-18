@@ -1,15 +1,23 @@
 from fastapi import FastAPI, HTTPException, Path
 import requests
 from typing import Optional
+from fastapi.openapi.models import Server
 
+# Define the FastAPI app and set the production server
 app = FastAPI(
     title="FountainAI GitHub Repository Controller",
     description="A non-destructive proxy to retrieve metadata, file contents, commit history, pull requests, issues, and traffic insights from the FountainAI GitHub repository.",
     version="1.0.0",
     contact={
-        "name": "FountainAI Development Team",
-        "email": "support@fountainai.dev"
-    }
+        "name": "FountainAI ",
+        "email": "mail@benedikt-eickhoff.de"
+    },
+    servers=[
+        {
+            "url": "https://proxy.fountain.coach",
+            "description": "Production server"
+        }
+    ]  # Only the production server
 )
 
 GITHUB_API_URL = "https://api.github.com"
@@ -27,7 +35,7 @@ def github_request(endpoint: str, params=None):
     
     return response.json()
 
-# Root route (newly added)
+# Root route
 @app.get("/", summary="Root Endpoint", description="Welcome to the FountainAI GitHub Proxy")
 async def read_root():
     return {"message": "Welcome to the FountainAI GitHub Proxy"}
