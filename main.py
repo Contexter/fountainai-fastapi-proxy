@@ -1,6 +1,6 @@
+import base64
 from fastapi import FastAPI, HTTPException, Path
 import requests
-import base64
 from typing import Optional
 
 app = FastAPI(
@@ -29,11 +29,9 @@ def github_request(endpoint: str, params=None):
     return response.json()
 
 # Helper function to decode base64 content
-def decode_base64(content: str):
-    try:
-        return base64.b64decode(content).decode('utf-8')
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error decoding base64 content: {e}")
+def decode_base64(content):
+    decoded_bytes = base64.b64decode(content)
+    return decoded_bytes.decode('utf-8')
 
 # 1. Get Repository Information
 @app.get("/repo/{owner}/{repo}", operation_id="get_repo_info", summary="Retrieve repository metadata",
@@ -51,14 +49,14 @@ def get_repo_info(owner: str = Path(..., description="GitHub username or organiz
          description="List the files and directories in the repository, including file names, file size, type (file or directory), and download URLs.")
 def list_repo_contents(owner: str = Path(..., description="GitHub username or organization"),
                        repo: str = Path(..., description="Repository name"),
-                       path: Optional[str] = Path("", description="Optional path to a specific directory or file.")):
+                       path: Optional[str] = Path(None, description="Optional path to a specific directory or file.")):
     """
     List the contents of a repository, such as file names, file sizes, and download URLs for files. You can optionally specify a path to retrieve contents of a specific directory or file.
     """
-    endpoint = f"repos/{owner}/{repo}/contents/{path}"
+    endpoint = f"repos/{owner}/{repo}/contents/{path if path else ''}"
     return github_request(endpoint)
 
-# 3. Get File Content with Base64 Decoding
+# 3. Get File Content (with base64 decoding)
 @app.get("/repo/{owner}/{repo}/file/{path:path}", operation_id="get_file_content", summary="Retrieve and decode file content",
          description="Get the content of a specific file in the repository. The content is base64-encoded and decoded to return the file content.")
 def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
@@ -70,11 +68,11 @@ def get_file_content(owner: str = Path(..., description="GitHub username or orga
     endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_data = github_request(endpoint)
     
-    if 'content' in file_data:
+    if 'content' in file_data and file_data.get('encoding') == 'base64':
         decoded_content = decode_base64(file_data['content'])
         return {"decoded_content": decoded_content}
     else:
-        raise HTTPException(status_code=404, detail="File content not found")
+        raise HTTPException(status_code=404, detail="File content not found or not base64-encoded")
 
 # 4. Get Commit History
 @app.get("/repo/{owner}/{repo}/commits", operation_id="get_commit_history", summary="Retrieve commit history",
@@ -136,8 +134,12 @@ def get_repo_traffic_views(owner: str = Path(..., description="GitHub username o
 def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username or organization"),
                             repo: str = Path(..., description="Repository name")):
     """
-    Retrieve the number of times the repository has been cloned over a specific time period,
-    providing insights into how often the repository is replicated.
+    Retrieve the number of times the repository has been cloned over a specific time period, providing insights into how often the repository is replicated.
     """
     endpoint = f"repos/{owner}/{repo}/traffic/clones"
     return github_request(endpoint)
+
+# Run the Uvicorn server (use this command if running from command line)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
