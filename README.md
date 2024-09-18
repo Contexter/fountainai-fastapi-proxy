@@ -1,6 +1,4 @@
-Here’s a draft for a **README** file for the **FastAPI Proxy** GitHub repository, designed to interlink with the **FountainAI Book** and function as a documentation tool:
 
----
 
 # FountainAI FastAPI Proxy
 
