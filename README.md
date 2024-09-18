@@ -67,13 +67,6 @@ The FastAPI Proxy can be deployed on AWS Lightsail or other similar platforms. A
 For more information, check out the deployment steps here:  
 [FastAPI Proxy Deployment Guide](https://github.com/Contexter/FountainAI-Book/blob/main/chapters/chapter11.md)
 
-## Contributing
-
-If you’d like to contribute to this project, feel free to submit a pull request. Please ensure your changes are well-documented and align with the overall structure of the FountainAI platform.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
