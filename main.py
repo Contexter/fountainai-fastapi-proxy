@@ -43,7 +43,7 @@ def get_repo_info(owner: str = Path(..., description="GitHub username or organiz
          description="List the files and directories in the repository, including file names, file size, type (file or directory), and download URLs.")
 def list_repo_contents(owner: str = Path(..., description="GitHub username or organization"), 
                        repo: str = Path(..., description="Repository name"), 
-                       path: Optional[str] = Path("", description="Optional path to a specific directory or file.")):
+                       path: Optional[str] = Path(..., description="Optional path to a specific directory or file.")):
     """
     List the contents of a repository, such as file names, file sizes, and download URLs for files. You can optionally specify a path to retrieve contents of a specific directory or file.
     """
