@@ -27,6 +27,11 @@ def github_request(endpoint: str, params=None):
     
     return response.json()
 
+# Root route (newly added)
+@app.get("/", summary="Root Endpoint", description="Welcome to the FountainAI GitHub Proxy")
+async def read_root():
+    return {"message": "Welcome to the FountainAI GitHub Proxy"}
+
 # 1. Get Repository Information
 @app.get("/repo/{owner}/{repo}", operation_id="get_repo_info", summary="Retrieve repository metadata",
          description="Retrieve metadata about the repository, including stars, forks, watchers, open issues, default branch, visibility (public/private), and description.")
@@ -91,7 +96,7 @@ def list_issues(owner: str = Path(..., description="GitHub username or organizat
 # 7. List Branches
 @app.get("/repo/{owner}/{repo}/branches", operation_id="list_branches", summary="List repository branches",
          description="Retrieve a list of branches in the repository, including branch name and whether the branch is protected.")
-def list_branches(owner: str = Path(..., description="GitHub username or organization"), 
+def list_branches(owner: str = Path(..., description="GitHub username or organization"),
                   repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/branches"
     return github_request(endpoint)
