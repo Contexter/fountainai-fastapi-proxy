@@ -40,8 +40,15 @@ def get_repo_info(owner: str = Path(..., description="GitHub username or organiz
          description="List the files and directories in the repository, including file names, file size, type (file or directory), and download URLs.")
 def list_repo_contents(owner: str = Path(..., description="GitHub username or organization"),
                        repo: str = Path(..., description="Repository name"),
-                       path: Optional[str] = Path(None, description="Optional path to a specific directory or file.")):
-    endpoint = f"repos/{owner}/{repo}/contents/{path}" if path else f"repos/{owner}/{repo}/contents"
+                       path: Optional[str] = None):
+    """
+    Lists contents of the repository. The path parameter is optional.
+    """
+    if path:
+        endpoint = f"repos/{owner}/{repo}/contents/{path}"
+    else:
+        endpoint = f"repos/{owner}/{repo}/contents"
+    
     return github_request(endpoint)
 
 # 3. Get File Content
@@ -84,7 +91,7 @@ def list_issues(owner: str = Path(..., description="GitHub username or organizat
 # 7. List Branches
 @app.get("/repo/{owner}/{repo}/branches", operation_id="list_branches", summary="List repository branches",
          description="Retrieve a list of branches in the repository, including branch name and whether the branch is protected.")
-def list_branches(owner: str = Path(..., description="GitHub username or organization"),
+def list_branches(owner: str = Path(..., description="GitHub username or organization"), 
                   repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/branches"
     return github_request(endpoint)
