@@ -320,3 +320,64 @@ To install, run: pip install email-validator
 2024-09-19 14:45:37,979 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/de0371b885ebc9b88f882df2992545941aa6d503 HTTP/11" 416 0
 2024-09-19 14:45:37,979 - ERROR - Failed to fetch chunk from file, status code: 416
 2024-09-19 14:45:37,979 - ERROR - Error fetching file chunk for chapters/chapter5.md: 
+2024-09-19 14:46:51,904 - INFO - Fetching lines from file: app.log in repo: FountainAI-Book
+2024-09-19 14:46:51,905 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:46:52,131 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/app.log HTTP/11" 404 126
+2024-09-19 14:46:52,131 - ERROR - Failed to retrieve file SHA for app.log
+2024-09-19 14:46:52,132 - ERROR - Error fetching SHA for file app.log: 
+2024-09-19 14:47:49,432 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 14:47:49,433 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:47:49,649 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 978
+2024-09-19 14:47:53,347 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:47:53,348 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:47:53,591 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 None
+2024-09-19 14:47:53,595 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:47:53,794 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 200 None
+2024-09-19 14:47:53,795 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 14:47:53,797 - INFO - Successfully fetched lines from app.log
+2024-09-19 14:48:21,722 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:48:21,723 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:48:21,971 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 None
+2024-09-19 14:48:21,976 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:48:22,197 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 200 None
+2024-09-19 14:48:22,197 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 14:48:22,199 - INFO - Successfully fetched lines from app.log
+2024-09-19 14:49:21,679 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:49:21,680 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:21,914 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 None
+2024-09-19 14:49:21,917 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:22,153 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 200 None
+2024-09-19 14:49:22,154 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 14:49:22,157 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:22,220 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 416 0
+2024-09-19 14:49:22,220 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:49:22,220 - ERROR - Error fetching file chunk for app.log: 
+2024-09-19 14:49:32,078 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:49:32,089 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:32,154 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 9441
+2024-09-19 14:49:32,158 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:32,222 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 206 3227
+2024-09-19 14:49:32,225 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:49:32,312 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 416 0
+2024-09-19 14:49:32,312 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:49:32,312 - ERROR - Error fetching file chunk for app.log: 
+2024-09-19 14:50:49,343 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:50:49,343 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:50:49,549 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 None
+2024-09-19 14:50:49,552 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:50:49,764 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 200 None
+2024-09-19 14:50:49,765 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 14:50:49,767 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:50:49,835 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 416 0
+2024-09-19 14:50:49,835 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:50:49,835 - ERROR - Error fetching file chunk for app.log: 
+2024-09-19 14:51:23,642 - INFO - Fetching lines from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 14:51:23,643 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:51:23,869 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 None
+2024-09-19 14:51:23,872 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:51:24,086 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 200 None
+2024-09-19 14:51:24,087 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 14:51:24,090 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:51:24,173 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/b50ebff447fa6131a6896f83d4401dcc5de0fe53 HTTP/11" 416 0
+2024-09-19 14:51:24,173 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:51:24,173 - ERROR - Error fetching file chunk for app.log: 
