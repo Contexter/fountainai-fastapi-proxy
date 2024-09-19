@@ -1,6 +1,10 @@
 from fastapi import FastAPI, HTTPException, Path
 import requests
 from typing import Optional
+import logging
+
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO)
 
 # Define the FastAPI app and set the production server
 app = FastAPI(
@@ -30,9 +34,11 @@ def github_request(endpoint: str, params=None, headers=None):
         headers = {
             "Accept": "application/vnd.github.v3+json"
         }
+    logging.info(f"Making GitHub API request to: {url}")
     response = requests.get(url, headers=headers, params=params)
     
     if response.status_code not in [200, 206]:
+        logging.error(f"GitHub API error: {response.status_code}, {response.text}")
         raise HTTPException(status_code=response.status_code, detail=response.json())
     
     return response.json()
@@ -68,11 +74,13 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
 def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
                      repo: str = Path(..., description="Repository name"),
                      path: str = Path(..., description="Path to the file in the repository.")):
+    logging.info(f"Fetching content from file: {path} in repo: {repo}")
     endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_content = github_request(endpoint)
 
     # Check file size and raise error if the file is too large
     if file_content.get("size", 0) > MAX_FILE_SIZE_BYTES:
+        logging.error(f"File size {file_content.get('size')} exceeds limit")
         raise HTTPException(status_code=413, detail="File too large to retrieve in a single request.")
     
     # Decode the base64 content if necessary
@@ -88,6 +96,7 @@ def get_file_sha(owner: str, repo: str, path: str):
     Fetch file metadata to retrieve the SHA of the file.
     Internal method not exposed to users.
     """
+    logging.info(f"Fetching SHA for file: {path} in repo: {repo}")
     endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_metadata = github_request(endpoint)
     
@@ -95,8 +104,10 @@ def get_file_sha(owner: str, repo: str, path: str):
     file_sha = file_metadata.get("sha")
     
     if not file_sha:
+        logging.error(f"SHA not found for file {path}")
         raise HTTPException(status_code=404, detail="SHA not found for the file.")
     
+    logging.info(f"File SHA for {path}: {file_sha}")
     return file_sha
 
 # Fetch a chunk of the blob using the GitHub /git/blobs/:sha API
@@ -105,6 +116,7 @@ def get_file_in_chunks(owner: str, repo: str, sha: str, start_byte: int, chunk_s
     Fetch a large file from GitHub in byte chunks using the blob API.
     Internal method not exposed to users.
     """
+    logging.info(f"Fetching chunk for file with SHA {sha}, starting from byte {start_byte}")
     endpoint = f"repos/{owner}/{repo}/git/blobs/{sha}"
     
     # Simulate a byte-range request
@@ -114,6 +126,7 @@ def get_file_in_chunks(owner: str, repo: str, sha: str, start_byte: int, chunk_s
     response = requests.get(endpoint, headers=headers)
     
     if response.status_code != 206:  # Expect Partial Content (206) for range requests
+        logging.error(f"Failed to fetch chunk, status code: {response.status_code}")
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch blob chunk.")
     
     blob_data = response.json()
@@ -152,24 +165,38 @@ def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, en
     """
     Public-facing method to retrieve specific lines from a large file by reading it in chunks.
     """
+    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
+
     # Initialization
     start_byte = 0
     total_lines = []
     carry_over = ""
 
     # Step 1: Fetch the file SHA (internal process)
-    file_sha = get_file_sha(owner, repo, path)
-    
+    try:
+        file_sha = get_file_sha(owner, repo, path)
+    except Exception as e:
+        logging.error(f"Error fetching SHA for file {path}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching SHA: {str(e)}")
+
+    logging.info(f"File SHA for {path}: {file_sha}")
+
     # Step 2: Fetch and process chunks until we have the requested lines
     while len(total_lines) < (end_line or start_line + 100):  # Fetch until we have enough lines
-        chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)
-        
+        try:
+            chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)
+        except Exception as e:
+            logging.error(f"Error fetching file chunk for {path}: {e}")
+            raise HTTPException(status_code=500, detail=f"Error fetching file chunk: {str(e)}")
+
         # Process the chunk into lines
         lines, carry_over = process_chunk(chunk, carry_over)
         total_lines.extend(lines)
-        
+
         # Update byte pointer for the next chunk
         start_byte += CHUNK_SIZE
+
+    logging.info(f"Successfully fetched {len(total_lines)} lines from {path}")
 
     # Step 3: Return the requested lines
     return {"lines": total_lines[start_line:end_line]}
