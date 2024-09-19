@@ -60,3 +60,9 @@ To install, run: pip install email-validator
 2024-09-19 09:21:56,335 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/8a946a260ebd797eacfa48cf350c2840ca1cd627 HTTP/11" 200 None
 2024-09-19 09:21:56,339 - ERROR - Failed to fetch chunk from file, status code: 200
 2024-09-19 09:21:56,339 - ERROR - Error fetching file chunk for Hamlet.txt: 
+2024-09-19 10:48:57,110 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 10:48:57,114 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 10:48:57,317 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 711
+2024-09-19 10:52:21,869 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 10:52:21,870 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 10:52:22,068 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 711
