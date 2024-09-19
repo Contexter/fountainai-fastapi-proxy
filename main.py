@@ -20,17 +20,19 @@ app = FastAPI(
 )
 
 GITHUB_API_URL = "https://api.github.com"
+CHUNK_SIZE = 50000  # 50 KB chunk size for large files
 MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for GitHub API
 
 # Helper function to make requests to GitHub API
-def github_request(endpoint: str, params=None):
+def github_request(endpoint: str, params=None, headers=None):
     url = f"{GITHUB_API_URL}/{endpoint}"
-    headers = {
-        "Accept": "application/vnd.github.v3+json"
-    }
+    if headers is None:
+        headers = {
+            "Accept": "application/vnd.github.v3+json"
+        }
     response = requests.get(url, headers=headers, params=params)
     
-    if response.status_code != 200:
+    if response.status_code not in [200, 206]:
         raise HTTPException(status_code=response.status_code, detail=response.json())
     
     return response.json()
@@ -66,7 +68,6 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
 def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
                      repo: str = Path(..., description="Repository name"),
                      path: str = Path(..., description="Path to the file in the repository.")):
-    # Construct the endpoint without using quote(path)
     endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_content = github_request(endpoint)
 
@@ -80,6 +81,98 @@ def get_file_content(owner: str = Path(..., description="GitHub username or orga
         file_content["content"] = base64.b64decode(file_content["content"]).decode('utf-8')
     
     return file_content
+
+# Fetch the SHA of a file from the GitHub /contents/ API
+def get_file_sha(owner: str, repo: str, path: str):
+    """
+    Fetch file metadata to retrieve the SHA of the file.
+    Internal method not exposed to users.
+    """
+    endpoint = f"repos/{owner}/{repo}/contents/{path}"
+    file_metadata = github_request(endpoint)
+    
+    # Extract the file's SHA
+    file_sha = file_metadata.get("sha")
+    
+    if not file_sha:
+        raise HTTPException(status_code=404, detail="SHA not found for the file.")
+    
+    return file_sha
+
+# Fetch a chunk of the blob using the GitHub /git/blobs/:sha API
+def get_file_in_chunks(owner: str, repo: str, sha: str, start_byte: int, chunk_size: int = CHUNK_SIZE):
+    """
+    Fetch a large file from GitHub in byte chunks using the blob API.
+    Internal method not exposed to users.
+    """
+    endpoint = f"repos/{owner}/{repo}/git/blobs/{sha}"
+    
+    # Simulate a byte-range request
+    headers = {
+        'Range': f'bytes={start_byte}-{start_byte + chunk_size - 1}'  # Fetch chunk of size `chunk_size`
+    }
+    response = requests.get(endpoint, headers=headers)
+    
+    if response.status_code != 206:  # Expect Partial Content (206) for range requests
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch blob chunk.")
+    
+    blob_data = response.json()
+    
+    # Decode the base64 content (GitHub blobs are base64 encoded)
+    if blob_data.get("encoding") == "base64":
+        import base64
+        decoded_content = base64.b64decode(blob_data["content"]).decode('utf-8')
+    else:
+        decoded_content = blob_data["content"]
+    
+    return decoded_content
+
+# Process the chunk of content and split into lines, handling any incomplete lines
+def process_chunk(chunk: str, carry_over: str = ""):
+    """
+    Process a chunk of text, split it into lines, and handle incomplete lines by carrying them over.
+    Internal method.
+    """
+    lines = (carry_over + chunk).splitlines(True)  # Preserve line breaks
+    if not lines:
+        return [], ""
+
+    # If the last line doesn't end with a newline, it's incomplete; carry it over
+    if not lines[-1].endswith(('\n', '\r\n')):
+        carry_over = lines.pop()  # Carry over the last incomplete line
+    else:
+        carry_over = ""
+    
+    return lines, carry_over
+
+# Public API to retrieve specific lines from a large file
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
+         description="Get a specific range of lines from a large file in the repository.")
+def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
+    """
+    Public-facing method to retrieve specific lines from a large file by reading it in chunks.
+    """
+    # Initialization
+    start_byte = 0
+    total_lines = []
+    carry_over = ""
+
+    # Step 1: Fetch the file SHA (internal process)
+    file_sha = get_file_sha(owner, repo, path)
+    
+    # Step 2: Fetch and process chunks until we have the requested lines
+    while len(total_lines) < (end_line or start_line + 100):  # Fetch until we have enough lines
+        chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)
+        
+        # Process the chunk into lines
+        lines, carry_over = process_chunk(chunk, carry_over)
+        total_lines.extend(lines)
+        
+        # Update byte pointer for the next chunk
+        start_byte += CHUNK_SIZE
+
+    # Step 3: Return the requested lines
+    return {"lines": total_lines[start_line:end_line]}
 
 # 4. Get Commit History
 @app.get("/repo/{owner}/{repo}/commits", operation_id="get_commit_history", summary="Retrieve commit history",
@@ -127,43 +220,3 @@ def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username 
                             repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/traffic/clones"
     return github_request(endpoint)
-
-# NEW FEATURE: Fetch file content by line range
-@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
-         description="Get a specific range of lines from a file in the repository.")
-def get_file_lines(owner: str = Path(..., description="GitHub username or organization"),
-                   repo: str = Path(..., description="Repository name"),
-                   path: str = Path(..., description="Path to the file in the repository."),
-                   start_line: Optional[int] = 0,
-                   end_line: Optional[int] = None):
-    """
-    Retrieve file content and return a specific range of lines.
-    """
-    # Construct the endpoint to fetch the full file content
-    endpoint = f"repos/{owner}/{repo}/contents/{path}"
-    
-    # Fetch the file content
-    file_content = github_request(endpoint)
-    
-    # Check file size before proceeding
-    if file_content.get("size", 0) > MAX_FILE_SIZE_BYTES:
-        raise HTTPException(status_code=413, detail="File too large to retrieve in a single request.")
-    
-    # Decode the base64 content if necessary
-    if file_content.get("encoding") == "base64":
-        import base64
-        file_content["content"] = base64.b64decode(file_content["content"]).decode('utf-8')
-    
-    # Split the content into lines
-    lines = file_content["content"].splitlines()
-    
-    # Set end_line to the total number of lines if not provided
-    if end_line is None or end_line > len(lines):
-        end_line = len(lines)
-    
-    # Validate the line range
-    if start_line < 0 or start_line >= len(lines):
-        raise HTTPException(status_code=400, detail="Invalid start line range")
-    
-    # Return the requested range of lines
-    return {"lines": lines[start_line:end_line]}
