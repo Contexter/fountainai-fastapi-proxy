@@ -14,3 +14,42 @@ To install, run: pip install email-validator
 2024-09-19 08:38:22,835 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-19 08:38:23,044 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt/lines HTTP/11" 404 126
 2024-09-19 08:38:23,044 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}
+2024-09-19 08:39:39,744 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 08:39:39,745 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:39:40,070 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 08:40:03,263 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 08:40:03,264 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:40:03,548 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 08:40:13,656 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy
+2024-09-19 08:40:13,658 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:40:13,867 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy HTTP/11" 200 1226
+2024-09-19 08:40:36,541 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 08:40:36,543 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:40:36,782 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 714
+2024-09-19 08:41:01,543 - INFO - Fetching content from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 08:41:01,544 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents/app.log
+2024-09-19 08:41:01,545 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:41:01,770 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 1511
+2024-09-19 08:51:00,089 - INFO - Fetching content from file: main.py in repo: fountainai-fastapi-proxy
+2024-09-19 08:51:00,089 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents/main.py
+2024-09-19 08:51:00,090 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:51:00,359 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/main.py HTTP/11" 200 None
+2024-09-19 09:08:35,677 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 09:08:35,678 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 09:08:35,976 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 09:09:08,378 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 09:09:08,380 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 09:09:08,706 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 09:09:26,550 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 09:09:26,551 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 09:09:26,617 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 10336
+2024-09-19 09:09:53,484 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 09:09:53,485 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 09:09:53,765 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 09:18:19,133 - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2024-09-19 09:19:50,601 - INFO - Fetching lines from file: https://raw.githubusercontent.com/Contexter/Shakespeare-TXT/refs/heads/main/Hamlet.txt in repo: Shakespeare-TXT
+2024-09-19 09:19:50,603 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 09:19:50,839 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/https://raw.githubusercontent.com/Contexter/Shakespeare-TXT/refs/heads/main/Hamlet.txt HTTP/11" 404 126
+2024-09-19 09:19:50,840 - ERROR - Failed to retrieve file SHA for https://raw.githubusercontent.com/Contexter/Shakespeare-TXT/refs/heads/main/Hamlet.txt
+2024-09-19 09:19:50,840 - ERROR - Error fetching SHA for file https://raw.githubusercontent.com/Contexter/Shakespeare-TXT/refs/heads/main/Hamlet.txt: 
