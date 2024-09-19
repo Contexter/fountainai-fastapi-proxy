@@ -1,0 +1,2 @@
+2024-09-19 08:28:38,671 - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
