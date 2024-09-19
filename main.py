@@ -65,13 +65,13 @@ def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, en
 
     # Fetch the file's SHA (GitHub-specific, assuming this is needed)
     try:
-        file_sha = get_file_sha(owner, repo, path)  # Utility function to fetch file's SHA
+        file_sha = get_file_sha(owner, repo, path)
     except Exception as e:
         logging.error(f"Error fetching SHA for file {path}: {e}")
         raise HTTPException(status_code=500, detail=f"Error fetching SHA: {str(e)}")
 
     # Process chunks until we gather all requested lines
-    while len(total_lines) < (end_line or start_line + 100):  # Stop once we have enough lines
+    while len(total_lines) < (end_line or start_line + 100):
         try:
             # Fetch file in chunks
             chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)  # Fetch chunk
@@ -99,7 +99,10 @@ def get_file_in_chunks(owner, repo, sha, start_byte, chunk_size):
         "Range": f"bytes={start_byte}-{start_byte + chunk_size - 1}"
     }
     response = requests.get(url, headers=headers)
-    if response.status_code != 206:  # Partial Content
+    if response.status_code == 200 and "Range" not in response.headers:
+        logging.info("File is small enough to retrieve without chunking.")
+        return response.content
+    elif response.status_code != 206:  # Expecting Partial Content for chunked files
         logging.error(f"Failed to fetch chunk from file, status code: {response.status_code}")
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch file chunk.")
     return response.content
