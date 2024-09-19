@@ -139,10 +139,10 @@ def get_file_lines(owner: str = Path(..., description="GitHub username or organi
     """
     Retrieve file content and return a specific range of lines.
     """
-    # Construct the endpoint without encoding the path manually
+    # Construct the endpoint to fetch the full file content
     endpoint = f"repos/{owner}/{repo}/contents/{path}"
     
-    # Fetch the file content using the existing logic
+    # Fetch the file content
     file_content = github_request(endpoint)
     
     # Check file size before proceeding
@@ -158,12 +158,12 @@ def get_file_lines(owner: str = Path(..., description="GitHub username or organi
     lines = file_content["content"].splitlines()
     
     # Set end_line to the total number of lines if not provided
-    if end_line is None:
+    if end_line is None or end_line > len(lines):
         end_line = len(lines)
     
-    # Validate line range
-    if start_line < 0 or end_line > len(lines):
-        raise HTTPException(status_code=400, detail="Invalid line range")
+    # Validate the line range
+    if start_line < 0 or start_line >= len(lines):
+        raise HTTPException(status_code=400, detail="Invalid start line range")
     
     # Return the requested range of lines
     return {"lines": lines[start_line:end_line]}
