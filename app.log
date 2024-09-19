@@ -1,2 +1,16 @@
 2024-09-19 08:28:38,671 - WARNING - email-validator not installed, email fields will be treated as str.
 To install, run: pip install email-validator
+2024-09-19 08:32:59,361 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 08:32:59,364 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:32:59,595 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 709
+2024-09-19 08:33:28,377 - INFO - Fetching content from file: app.log in repo: fountainai-fastapi-proxy
+2024-09-19 08:33:28,377 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents/app.log
+2024-09-19 08:33:28,378 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:33:28,617 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app.log HTTP/11" 200 462
+2024-09-19 08:36:33,211 - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2024-09-19 08:38:22,833 - INFO - Fetching content from file: Hamlet.txt/lines in repo: Shakespeare-TXT
+2024-09-19 08:38:22,833 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt/lines
+2024-09-19 08:38:22,835 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 08:38:23,044 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt/lines HTTP/11" 404 126
+2024-09-19 08:38:23,044 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}
