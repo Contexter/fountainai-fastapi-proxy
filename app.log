@@ -66,3 +66,150 @@ To install, run: pip install email-validator
 2024-09-19 10:52:21,869 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
 2024-09-19 10:52:21,870 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-19 10:52:22,068 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 711
+2024-09-19 11:09:42,711 - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2024-09-19 11:11:35,391 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-19 11:11:35,393 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:11:35,698 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 711
+2024-09-19 11:12:10,415 - INFO - Fetching lines from file: main.py in repo: fountainai-fastapi-proxy
+2024-09-19 11:12:10,417 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:12:10,643 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/main.py HTTP/11" 200 None
+2024-09-19 11:12:10,646 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:12:10,854 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/a7c3ab13c6ffd556d0c7b938d131a4364ac4c491 HTTP/11" 206 3427
+2024-09-19 11:12:10,856 - INFO - Successfully fetched lines from main.py
+2024-09-19 11:13:43,502 - INFO - Fetching lines from file: Hamlet.txt in repo: Shakespeare-TXT
+2024-09-19 11:13:43,503 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:13:43,773 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt HTTP/11" 200 None
+2024-09-19 11:13:43,782 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:13:44,004 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/8a946a260ebd797eacfa48cf350c2840ca1cd627 HTTP/11" 200 None
+2024-09-19 11:13:44,007 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:13:44,009 - INFO - Successfully fetched lines from Hamlet.txt
+2024-09-19 11:15:05,243 - INFO - Fetching lines from file: Hamlet.txt in repo: Shakespeare-TXT
+2024-09-19 11:15:05,244 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:15:05,503 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt HTTP/11" 200 None
+2024-09-19 11:15:05,510 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:15:05,724 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/8a946a260ebd797eacfa48cf350c2840ca1cd627 HTTP/11" 200 None
+2024-09-19 11:15:05,727 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:15:05,730 - INFO - Successfully fetched lines from Hamlet.txt
+2024-09-19 11:19:06,926 - INFO - Fetching lines from file: Hamlet.txt in repo: Shakespeare-TXT
+2024-09-19 11:19:06,927 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:19:07,172 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/Hamlet.txt HTTP/11" 200 None
+2024-09-19 11:19:07,179 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:19:07,404 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/8a946a260ebd797eacfa48cf350c2840ca1cd627 HTTP/11" 200 None
+2024-09-19 11:19:07,407 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:19:07,409 - INFO - Successfully fetched lines from Hamlet.txt
+2024-09-19 11:20:53,492 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/the-four-stars/contents
+2024-09-19 11:20:53,493 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:20:53,691 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents HTTP/11" 200 383
+2024-09-19 11:21:33,003 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:21:42,510 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:21:42,511 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:21:42,828 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:21:42,831 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:21:43,335 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:21:43,561 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:21:43,607 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:23:00,547 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:23:00,549 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:23:00,880 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:23:00,883 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:23:01,417 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:23:01,637 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:23:01,674 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:24:47,548 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:24:55,552 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:24:55,553 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:24:55,904 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:24:55,907 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:24:56,443 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:24:56,620 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:24:56,666 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:29:14,675 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:29:14,676 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:29:14,887 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:29:14,890 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:29:15,368 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:29:15,562 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:29:15,599 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:29:58,269 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:29:58,270 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:29:58,482 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:29:58,485 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:29:59,070 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:29:59,265 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:29:59,303 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:30:28,406 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:30:28,407 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:30:28,666 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:30:28,671 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:30:29,232 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:30:29,452 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:30:29,499 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:30:36,083 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:30:36,084 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:30:36,151 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:30:36,154 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:30:36,234 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:30:36,239 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:30:36,311 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:30:36,312 - ERROR - Error fetching file chunk for the four stars: ('Received response with content-encoding: gzip, but failed to decode it.', error('Error -3 while decompressing data: incorrect header check'))
+2024-09-19 11:31:16,316 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:31:16,317 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:31:16,522 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:31:16,525 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:31:17,083 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:31:17,496 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:31:17,540 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:31:20,840 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:31:20,841 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:31:20,903 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:31:20,905 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:31:20,969 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:31:20,974 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:31:21,036 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:31:21,036 - ERROR - Error fetching file chunk for the four stars: ('Received response with content-encoding: gzip, but failed to decode it.', error('Error -3 while decompressing data: incorrect header check'))
+2024-09-19 11:33:09,973 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:33:09,974 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:10,210 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:33:10,213 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:10,712 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:33:11,022 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:33:11,065 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:33:18,618 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:33:18,619 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:18,686 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:33:18,689 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:18,771 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:33:18,775 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:33:29,887 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:33:29,888 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:29,955 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:33:29,957 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:30,054 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:33:30,059 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:33:39,775 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:33:39,776 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:39,836 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:33:39,840 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:33:39,903 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:33:39,907 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:34:10,192 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:34:10,193 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:10,445 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:34:10,448 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:10,986 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:34:11,217 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:34:11,250 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:34:43,549 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:34:43,550 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:43,757 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:34:43,761 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:44,357 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 200 None
+2024-09-19 11:34:44,690 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:34:44,734 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:34:55,407 - INFO - Fetching lines from file: the four stars in repo: the-four-stars
+2024-09-19 11:34:55,408 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:55,540 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/contents/the%20four%20stars HTTP/11" 200 296
+2024-09-19 11:34:55,557 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:34:55,699 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
+2024-09-19 11:34:55,703 - INFO - Successfully fetched lines from the four stars
