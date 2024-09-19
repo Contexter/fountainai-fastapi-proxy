@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Path
 import requests
 from typing import Optional
-from urllib.parse import quote  # Import for URL encoding
 
 # Define the FastAPI app and set the production server
 app = FastAPI(
@@ -21,6 +20,7 @@ app = FastAPI(
 )
 
 GITHUB_API_URL = "https://api.github.com"
+MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for GitHub API
 
 # Helper function to make requests to GitHub API
 def github_request(endpoint: str, params=None):
@@ -57,11 +57,7 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
     """
     Lists contents of the repository. The path parameter is optional.
     """
-    if path:
-        endpoint = f"repos/{owner}/{repo}/contents/{path}"
-    else:
-        endpoint = f"repos/{owner}/{repo}/contents"
-    
+    endpoint = f"repos/{owner}/{repo}/contents/{path}" if path else f"repos/{owner}/{repo}/contents"
     return github_request(endpoint)
 
 # 3. Get File Content
@@ -70,10 +66,13 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
 def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
                      repo: str = Path(..., description="Repository name"),
                      path: str = Path(..., description="Path to the file in the repository.")):
-    # URL-encode the file path
-    encoded_path = quote(path)
-    endpoint = f"repos/{owner}/{repo}/contents/{encoded_path}"
+    # Construct the endpoint without using quote(path)
+    endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_content = github_request(endpoint)
+
+    # Check file size and raise error if the file is too large
+    if file_content.get("size", 0) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="File too large to retrieve in a single request.")
     
     # Decode the base64 content if necessary
     if file_content.get("encoding") == "base64":
@@ -140,14 +139,15 @@ def get_file_lines(owner: str = Path(..., description="GitHub username or organi
     """
     Retrieve file content and return a specific range of lines.
     """
-    # URL-encode the path to handle spaces and special characters
-    encoded_path = quote(path)
-
-    # Construct the endpoint with the encoded file path
-    endpoint = f"repos/{owner}/{repo}/contents/{encoded_path}"
+    # Construct the endpoint without encoding the path manually
+    endpoint = f"repos/{owner}/{repo}/contents/{path}"
     
     # Fetch the file content using the existing logic
     file_content = github_request(endpoint)
+    
+    # Check file size before proceeding
+    if file_content.get("size", 0) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="File too large to retrieve in a single request.")
     
     # Decode the base64 content if necessary
     if file_content.get("encoding") == "base64":
