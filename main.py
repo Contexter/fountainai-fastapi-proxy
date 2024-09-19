@@ -123,3 +123,39 @@ def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username 
                             repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/traffic/clones"
     return github_request(endpoint)
+
+
+# NEW FEATURE: Fetch file content by line range
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
+         description="Get a specific range of lines from a file in the repository.")
+def get_file_lines(owner: str = Path(..., description="GitHub username or organization"),
+                   repo: str = Path(..., description="Repository name"),
+                   path: str = Path(..., description="Path to the file in the repository."),
+                   start_line: Optional[int] = 0,
+                   end_line: Optional[int] = None):
+    """
+    Retrieve file content and return a specific range of lines.
+    """
+    # Fetch the file content using the existing logic
+    endpoint = f"repos/{owner}/{repo}/contents/{path}"
+    file_content = github_request(endpoint)
+    
+    # Decode the base64 content if necessary
+    if file_content.get("encoding") == "base64":
+        import base64
+        file_content["content"] = base64.b64decode(file_content["content"]).decode('utf-8')
+    
+    # Split the content into lines
+    lines = file_content["content"].splitlines()
+    
+    # Set end_line to the total number of lines if not provided
+    if end_line is None:
+        end_line = len(lines)
+    
+    # Validate line range
+    if start_line < 0 or end_line > len(lines):
+        raise HTTPException(status_code=400, detail="Invalid line range")
+    
+    # Return the requested range of lines
+    return {"lines": lines[start_line:end_line]}
+
