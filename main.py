@@ -49,11 +49,85 @@ def github_request(endpoint: str, params=None, headers=None):
     
     return response.json()
 
-# Root route
-@app.get("/", summary="Root Endpoint", description="Welcome to the FountainAI GitHub Proxy")
-async def read_root():
-    logging.debug("Root endpoint accessed")
-    return {"message": "Welcome to the FountainAI GitHub Proxy"}
+# Route to retrieve specific lines from a large file
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
+         description="Get a specific range of lines from a large file in the repository.")
+def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
+    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
+
+    if start_line < 0 or (end_line is not None and end_line < start_line):
+        raise HTTPException(status_code=400, detail="Invalid line range.")
+
+    # Variables for tracking progress
+    start_byte = 0
+    total_lines = []
+    carry_over = ""
+
+    # Fetch the file's SHA (GitHub-specific, assuming this is needed)
+    try:
+        file_sha = get_file_sha(owner, repo, path)  # Utility function to fetch file's SHA
+    except Exception as e:
+        logging.error(f"Error fetching SHA for file {path}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching SHA: {str(e)}")
+
+    # Process chunks until we gather all requested lines
+    while len(total_lines) < (end_line or start_line + 100):  # Stop once we have enough lines
+        try:
+            # Fetch file in chunks
+            chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)  # Fetch chunk
+        except Exception as e:
+            logging.error(f"Error fetching file chunk for {path}: {e}")
+            raise HTTPException(status_code=500, detail=f"Error fetching file chunk: {str(e)}")
+
+        # Process the chunk into lines
+        lines, carry_over = process_chunk(chunk, carry_over)
+        total_lines.extend(lines)
+
+        # Update byte pointer for the next chunk
+        start_byte += CHUNK_SIZE
+
+    logging.info(f"Successfully fetched lines from {path}")
+    
+    # Return the requested lines
+    return {"lines": total_lines[start_line:end_line]}
+
+# Fetch file content in chunks by byte-range
+def get_file_in_chunks(owner, repo, sha, start_byte, chunk_size):
+    url = f"https://api.github.com/repos/{owner}/{repo}/git/blobs/{sha}"
+    headers = {
+        "Accept": "application/vnd.github.v3.raw",
+        "Range": f"bytes={start_byte}-{start_byte + chunk_size - 1}"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code != 206:  # Partial Content
+        logging.error(f"Failed to fetch chunk from file, status code: {response.status_code}")
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch file chunk.")
+    return response.content
+
+# Process a chunk into lines, handling incomplete lines
+def process_chunk(chunk, carry_over):
+    # Combine the chunk with any remaining content from the previous chunk
+    content = carry_over + chunk.decode("utf-8")
+    
+    # Split the content into lines
+    lines = content.splitlines(keepends=True)  # Keep end-of-line characters
+    
+    # Handle the case where the last line may be incomplete
+    if not content.endswith("\n"):
+        carry_over = lines.pop()  # Store the incomplete last line for the next chunk
+    else:
+        carry_over = ""
+    
+    return lines, carry_over
+
+# Get file SHA using GitHub API
+def get_file_sha(owner, repo, path):
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        logging.error(f"Failed to retrieve file SHA for {path}")
+        raise HTTPException(status_code=response.status_code, detail="Failed to retrieve file SHA.")
+    return response.json().get("sha")
 
 # Route to retrieve repository information
 @app.get("/repo/{owner}/{repo}", operation_id="get_repo_info", summary="Retrieve repository metadata",
@@ -71,67 +145,6 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
                        path: Optional[str] = None):
     endpoint = f"repos/{owner}/{repo}/contents/{path}" if path else f"repos/{owner}/{repo}/contents"
     return github_request(endpoint)
-
-# Route to retrieve file content
-@app.get("/repo/{owner}/{repo}/file/{path:path}", operation_id="get_file_content", summary="Retrieve file content",
-         description="Get the content of a specific file in the repository. The content is base64-encoded and must be decoded.")
-def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
-                     repo: str = Path(..., description="Repository name"),
-                     path: str = Path(..., description="Path to the file in the repository.")):
-    logging.info(f"Fetching content from file: {path} in repo: {repo}")
-    endpoint = f"repos/{owner}/{repo}/contents/{path}"
-    file_content = github_request(endpoint)
-
-    # Check file size and raise error if the file is too large
-    if file_content.get("size", 0) > MAX_FILE_SIZE_BYTES:
-        logging.error(f"File size {file_content.get('size')} exceeds limit")
-        raise HTTPException(status_code=413, detail="File too large to retrieve in a single request.")
-    
-    # Decode the base64 content if necessary
-    if file_content.get("encoding") == "base64":
-        import base64
-        file_content["content"] = base64.b64decode(file_content["content"]).decode('utf-8')
-    
-    return file_content
-
-# Route to retrieve specific lines from a large file
-@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
-         description="Get a specific range of lines from a large file in the repository.")
-def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
-    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
-
-    # Initialization
-    start_byte = 0
-    total_lines = []
-    carry_over = ""
-
-    # Fetch the file SHA (internal process)
-    try:
-        file_sha = get_file_sha(owner, repo, path)
-    except Exception as e:
-        logging.error(f"Error fetching SHA for file {path}: {e}")
-        raise HTTPException(status_code=500, detail=f"Error fetching SHA: {str(e)}")
-
-    logging.info(f"File SHA for {path}: {file_sha}")
-
-    # Fetch and process chunks until we have the requested lines
-    while len(total_lines) < (end_line or start_line + 100):  # Fetch until we have enough lines
-        try:
-            chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)
-        except Exception as e:
-            logging.error(f"Error fetching file chunk for {path}: {e}")
-            raise HTTPException(status_code=500, detail=f"Error fetching file chunk: {str(e)}")
-
-        # Process the chunk into lines
-        lines, carry_over = process_chunk(chunk, carry_over)
-        total_lines.extend(lines)
-
-        # Update byte pointer for the next chunk
-        start_byte += CHUNK_SIZE
-
-    logging.info(f"Successfully fetched {len(total_lines)} lines from {path}")
-
-    return {"lines": total_lines[start_line:end_line]}
 
 # Route to commit and push logs to GitHub
 def commit_and_push_logs():
@@ -165,7 +178,7 @@ async def push_logs():
     except HTTPException as e:
         return {"error": e.detail}
 
-# Other routes for fetching commit history, pull requests, issues, branches, and traffic data
+# Route to retrieve commit history
 @app.get("/repo/{owner}/{repo}/commits", operation_id="get_commit_history", summary="Retrieve commit history",
          description="Get a list of commits in the repository, including the author, commit message, timestamp, and files changed in each commit.")
 def get_commit_history(owner: str = Path(..., description="GitHub username or organization"),
@@ -173,6 +186,7 @@ def get_commit_history(owner: str = Path(..., description="GitHub username or or
     endpoint = f"repos/{owner}/{repo}/commits"
     return github_request(endpoint)
 
+# Route to retrieve pull requests
 @app.get("/repo/{owner}/{repo}/pulls", operation_id="list_pull_requests", summary="List pull requests",
          description="Retrieve a list of pull requests for the repository, including title, status (open, closed, merged), author, and review status.")
 def list_pull_requests(owner: str = Path(..., description="GitHub username or organization"),
@@ -180,6 +194,7 @@ def list_pull_requests(owner: str = Path(..., description="GitHub username or or
     endpoint = f"repos/{owner}/{repo}/pulls"
     return github_request(endpoint)
 
+# Route to retrieve issues
 @app.get("/repo/{owner}/{repo}/issues", operation_id="list_issues", summary="List issues",
          description="Retrieve a list of issues for the repository, including title, status (open or closed), author, and assigned labels.")
 def list_issues(owner: str = Path(..., description="GitHub username or organization"),
@@ -187,6 +202,7 @@ def list_issues(owner: str = Path(..., description="GitHub username or organizat
     endpoint = f"repos/{owner}/{repo}/issues"
     return github_request(endpoint)
 
+# Route to retrieve repository branches
 @app.get("/repo/{owner}/{repo}/branches", operation_id="list_branches", summary="List repository branches",
          description="Retrieve a list of branches in the repository, including branch name and whether the branch is protected.")
 def list_branches(owner: str = Path(..., description="GitHub username or organization"),
@@ -194,6 +210,7 @@ def list_branches(owner: str = Path(..., description="GitHub username or organiz
     endpoint = f"repos/{owner}/{repo}/branches"
     return github_request(endpoint)
 
+# Route to retrieve traffic views
 @app.get("/repo/{owner}/{repo}/traffic/views", operation_id="get_traffic_views", summary="Retrieve repository traffic views",
          description="Get the number of views for the repository over a specified time period.")
 def get_repo_traffic_views(owner: str = Path(..., description="GitHub username or organization"),
@@ -201,6 +218,7 @@ def get_repo_traffic_views(owner: str = Path(..., description="GitHub username o
     endpoint = f"repos/{owner}/{repo}/traffic/views"
     return github_request(endpoint)
 
+# Route to retrieve traffic clones
 @app.get("/repo/{owner}/{repo}/traffic/clones", operation_id="get_traffic_clones", summary="Retrieve repository traffic clones",
          description="Get the number of times the repository has been cloned over a specified time period.")
 def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username or organization"),
