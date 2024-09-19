@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Path
 import requests
 from typing import Optional
-from fastapi.openapi.models import Server
+from urllib.parse import quote  # Import for URL encoding
 
 # Define the FastAPI app and set the production server
 app = FastAPI(
@@ -9,7 +9,7 @@ app = FastAPI(
     description="A non-destructive proxy to retrieve metadata, file contents, commit history, pull requests, issues, and traffic insights from the FountainAI GitHub repository.",
     version="1.0.0",
     contact={
-        "name": "FountainAI ",
+        "name": "FountainAI",
         "email": "mail@benedikt-eickhoff.de"
     },
     servers=[
@@ -17,7 +17,7 @@ app = FastAPI(
             "url": "https://proxy.fountain.coach",
             "description": "Production server"
         }
-    ]  # Only the production server
+    ]
 )
 
 GITHUB_API_URL = "https://api.github.com"
@@ -70,11 +70,16 @@ def list_repo_contents(owner: str = Path(..., description="GitHub username or or
 def get_file_content(owner: str = Path(..., description="GitHub username or organization"),
                      repo: str = Path(..., description="Repository name"),
                      path: str = Path(..., description="Path to the file in the repository.")):
-    endpoint = f"repos/{owner}/{repo}/contents/{path}"
+    # URL-encode the file path
+    encoded_path = quote(path)
+    endpoint = f"repos/{owner}/{repo}/contents/{encoded_path}"
     file_content = github_request(endpoint)
+    
+    # Decode the base64 content if necessary
     if file_content.get("encoding") == "base64":
         import base64
         file_content["content"] = base64.b64decode(file_content["content"]).decode('utf-8')
+    
     return file_content
 
 # 4. Get Commit History
@@ -124,7 +129,6 @@ def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username 
     endpoint = f"repos/{owner}/{repo}/traffic/clones"
     return github_request(endpoint)
 
-
 # NEW FEATURE: Fetch file content by line range
 @app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
          description="Get a specific range of lines from a file in the repository.")
@@ -136,8 +140,13 @@ def get_file_lines(owner: str = Path(..., description="GitHub username or organi
     """
     Retrieve file content and return a specific range of lines.
     """
+    # URL-encode the path to handle spaces and special characters
+    encoded_path = quote(path)
+
+    # Construct the endpoint with the encoded file path
+    endpoint = f"repos/{owner}/{repo}/contents/{encoded_path}"
+    
     # Fetch the file content using the existing logic
-    endpoint = f"repos/{owner}/{repo}/contents/{path}"
     file_content = github_request(endpoint)
     
     # Decode the base64 content if necessary
@@ -158,4 +167,3 @@ def get_file_lines(owner: str = Path(..., description="GitHub username or organi
     
     # Return the requested range of lines
     return {"lines": lines[start_line:end_line]}
-
