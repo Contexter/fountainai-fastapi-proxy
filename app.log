@@ -213,3 +213,34 @@ To install, run: pip install email-validator
 2024-09-19 11:34:55,557 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-19 11:34:55,699 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/the-four-stars/git/blobs/95a9b470db9adc269fcbee15072bbf98525c19c2 HTTP/11" 206 50000
 2024-09-19 11:34:55,703 - INFO - Successfully fetched lines from the four stars
+2024-09-19 11:55:34,247 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-api-proxy/commits
+2024-09-19 11:55:34,248 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:55:34,454 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-api-proxy/commits HTTP/11" 404 118
+2024-09-19 11:55:34,454 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"404"}
+2024-09-19 11:56:07,247 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/commits
+2024-09-19 11:56:07,251 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:56:07,570 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/commits HTTP/11" 200 None
+2024-09-19 11:57:29,848 - INFO - Fetching lines from file: All's Well That Ends Well.txt in repo: Shakespeare-TXT
+2024-09-19 11:57:29,850 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:57:30,130 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/All's%20Well%20That%20Ends%20Well.txt HTTP/11" 200 None
+2024-09-19 11:57:30,137 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:57:30,350 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/7bba208aac91366c1dcb444050e38a86d8f0260c HTTP/11" 200 None
+2024-09-19 11:57:30,353 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:57:30,354 - INFO - Successfully fetched lines from All's Well That Ends Well.txt
+2024-09-19 11:58:07,897 - INFO - Fetching lines from file: All's Well That Ends Well.txt in repo: Shakespeare-TXT
+2024-09-19 11:58:07,898 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:58:08,115 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/All's%20Well%20That%20Ends%20Well.txt HTTP/11" 200 None
+2024-09-19 11:58:08,121 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:58:08,342 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/7bba208aac91366c1dcb444050e38a86d8f0260c HTTP/11" 200 None
+2024-09-19 11:58:08,345 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:58:08,347 - INFO - Successfully fetched lines from All's Well That Ends Well.txt
+2024-09-19 11:58:31,167 - INFO - Fetching lines from file: All's Well That Ends Well.txt in repo: Shakespeare-TXT
+2024-09-19 11:58:31,168 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:58:31,411 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/contents/All's%20Well%20That%20Ends%20Well.txt HTTP/11" 200 None
+2024-09-19 11:58:31,417 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:58:31,640 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT/git/blobs/7bba208aac91366c1dcb444050e38a86d8f0260c HTTP/11" 200 None
+2024-09-19 11:58:31,642 - INFO - File is small enough to retrieve without chunking.
+2024-09-19 11:58:31,644 - INFO - Successfully fetched lines from All's Well That Ends Well.txt
+2024-09-19 11:59:25,158 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/Shakespeare-TXT
+2024-09-19 11:59:25,159 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 11:59:25,402 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT HTTP/11" 200 1257
