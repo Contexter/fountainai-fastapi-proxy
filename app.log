@@ -244,3 +244,79 @@ To install, run: pip install email-validator
 2024-09-19 11:59:25,158 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/Shakespeare-TXT
 2024-09-19 11:59:25,159 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-19 11:59:25,402 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Shakespeare-TXT HTTP/11" 200 1257
+2024-09-19 12:04:02,295 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/traffic/clones
+2024-09-19 12:04:02,296 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 12:04:02,528 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/traffic/clones HTTP/11" 403 140
+2024-09-19 12:04:02,529 - ERROR - GitHub API error: 403, {"message":"Must have push access to repository","documentation_url":"https://docs.github.com/rest/metrics/traffic#get-repository-clones","status":"403"}
+2024-09-19 14:37:39,005 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents
+2024-09-19 14:37:39,006 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:37:39,244 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents HTTP/11" 200 649
+2024-09-19 14:38:15,673 - INFO - Fetching lines from file: README.md in repo: FountainAI-Book
+2024-09-19 14:38:15,675 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:38:16,041 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3353
+2024-09-19 14:38:16,044 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:38:16,250 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 206 1908
+2024-09-19 14:38:16,253 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:38:16,343 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 416 0
+2024-09-19 14:38:16,343 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:38:16,343 - ERROR - Error fetching file chunk for README.md: 
+2024-09-19 14:38:19,488 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents/chapters
+2024-09-19 14:38:19,489 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:38:19,749 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters HTTP/11" 200 1020
+2024-09-19 14:38:59,703 - INFO - Fetching lines from file: README.md in repo: FountainAI-Book
+2024-09-19 14:38:59,705 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:39:00,082 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3353
+2024-09-19 14:39:00,085 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:39:00,343 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 206 1908
+2024-09-19 14:39:00,345 - INFO - Successfully fetched lines from README.md
+2024-09-19 14:39:48,739 - INFO - Fetching lines from file: README.md in repo: FountainAI-Book
+2024-09-19 14:39:48,740 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:39:48,970 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3353
+2024-09-19 14:39:48,973 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:39:49,240 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 206 1908
+2024-09-19 14:39:49,243 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:39:49,306 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 416 0
+2024-09-19 14:39:49,306 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:39:49,307 - ERROR - Error fetching file chunk for README.md: 
+2024-09-19 14:40:12,867 - INFO - Fetching lines from file: README.md in repo: FountainAI-Book
+2024-09-19 14:40:12,868 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:13,097 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 None
+2024-09-19 14:40:13,100 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:13,302 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 206 1908
+2024-09-19 14:40:13,305 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:13,365 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 416 0
+2024-09-19 14:40:13,366 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:40:13,366 - ERROR - Error fetching file chunk for README.md: 
+2024-09-19 14:40:53,436 - INFO - Fetching lines from file: README.md in repo: FountainAI-Book
+2024-09-19 14:40:53,440 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:53,680 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3353
+2024-09-19 14:40:53,683 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:53,887 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 206 1908
+2024-09-19 14:40:53,890 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:40:53,954 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/4cb25ef937d2d30c5d3db3468384bf9163e52815 HTTP/11" 416 0
+2024-09-19 14:40:53,955 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:40:53,955 - ERROR - Error fetching file chunk for README.md: 
+2024-09-19 14:44:47,707 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents
+2024-09-19 14:44:47,708 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:44:47,922 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents HTTP/11" 200 649
+2024-09-19 14:44:50,831 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents/chapters
+2024-09-19 14:44:50,834 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:44:51,053 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters HTTP/11" 200 1020
+2024-09-19 14:44:59,540 - INFO - Fetching lines from file: chapters/chapter5.md in repo: FountainAI-Book
+2024-09-19 14:44:59,542 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:44:59,772 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters/chapter5.md HTTP/11" 200 None
+2024-09-19 14:44:59,775 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:44:59,991 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/de0371b885ebc9b88f882df2992545941aa6d503 HTTP/11" 206 3535
+2024-09-19 14:44:59,994 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:45:00,115 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/de0371b885ebc9b88f882df2992545941aa6d503 HTTP/11" 416 0
+2024-09-19 14:45:00,116 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:45:00,116 - ERROR - Error fetching file chunk for chapters/chapter5.md: 
+2024-09-19 14:45:37,484 - INFO - Fetching lines from file: chapters/chapter5.md in repo: FountainAI-Book
+2024-09-19 14:45:37,485 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:45:37,711 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters/chapter5.md HTTP/11" 200 None
+2024-09-19 14:45:37,714 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:45:37,910 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/de0371b885ebc9b88f882df2992545941aa6d503 HTTP/11" 206 3535
+2024-09-19 14:45:37,913 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-19 14:45:37,979 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/de0371b885ebc9b88f882df2992545941aa6d503 HTTP/11" 416 0
+2024-09-19 14:45:37,979 - ERROR - Failed to fetch chunk from file, status code: 416
+2024-09-19 14:45:37,979 - ERROR - Error fetching file chunk for chapters/chapter5.md: 
