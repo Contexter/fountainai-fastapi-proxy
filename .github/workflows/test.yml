@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Updated to v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3  # Updated to v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -37,7 +37,7 @@ jobs:
         pytest tests/ | tee $TEST_LOG_DIR/test_log.txt
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3  # Updated version
+      uses: actions/upload-artifact@v3  # Updated to v3
       with:
         name: test-logs
-        path: $TEST_LOG_DIR/test_log.txt
+        path: logs/test_log.txt  # Directly referencing logs directory
