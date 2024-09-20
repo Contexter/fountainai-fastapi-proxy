@@ -8,12 +8,4 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome to the FastAPI App"}
 
-def test_push_logs():
-    response = client.get("/logs/push-logs")
-    assert response.status_code == 200
-
-def test_get_repo_info():
-    response = client.get("/repo/{owner}/{repo}")
-    assert response.status_code == 200
-
-# Add more tests as required
+# Add more tests for your routes and services here

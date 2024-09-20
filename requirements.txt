@@ -4,4 +4,5 @@ requests==2.31.0
 certbot==2.5.0
 
 # python3-certbot-nginx==2.5.0 
-# Install using the system package manager: sudo apt install python3-certbot-nginx
+# Install using the system package manager: sudo apt install python3-certbot-nginxpytest
+httpx
