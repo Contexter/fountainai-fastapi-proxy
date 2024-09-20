@@ -1,0 +1,42 @@
+name: Run FastAPI Tests
+
+on:
+  push:
+    branches:
+      - refactor-fastapi
+  pull_request:
+    branches:
+      - refactor-fastapi
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run pytest and save output to logs
+      run: |
+        mkdir -p test-results
+        pytest tests/ | tee test-results/test_log.txt
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-logs
+        path: test-results/test_log.txt
