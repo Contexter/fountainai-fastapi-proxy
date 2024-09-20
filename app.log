@@ -497,3 +497,6 @@ To install, run: pip install email-validator
 2024-09-20 05:53:02,891 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/branches
 2024-09-20 05:53:02,892 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-20 05:53:02,958 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/branches HTTP/11" 200 226
+2024-09-20 05:53:37,085 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/branches
+2024-09-20 05:53:37,086 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 05:53:37,315 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/branches HTTP/11" 200 226
