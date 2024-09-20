@@ -32,11 +32,12 @@ jobs:
 
     - name: Run pytest and save output to logs
       run: |
-        mkdir -p test-results
-        pytest tests/ | tee test-results/test_log.txt
+        export TEST_LOG_DIR=logs
+        mkdir -p $TEST_LOG_DIR
+        pytest tests/ | tee $TEST_LOG_DIR/test_log.txt
     
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3  # Updated version
       with:
         name: test-logs
-        path: test-results/test_log.txt
+        path: $TEST_LOG_DIR/test_log.txt
