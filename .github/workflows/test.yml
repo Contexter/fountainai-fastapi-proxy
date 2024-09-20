@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Updated to v3
+      uses: actions/checkout@v2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3  # Updated to v3
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -30,14 +30,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run pytest and save output to logs
+    - name: Run pytest and store logs in repository
       run: |
-        export TEST_LOG_DIR=logs
-        mkdir -p $TEST_LOG_DIR
-        pytest tests/ | tee $TEST_LOG_DIR/test_log.txt
-    
-    - name: Upload test results
-      uses: actions/upload-artifact@v3  # Updated to v3
-      with:
-        name: test-logs
-        path: logs/test_log.txt  # Directly referencing logs directory
+        mkdir -p test_logs/${{ matrix.python-version }}
+        TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
+        pytest tests/ | tee test_logs/${{ matrix.python-version }}/test_log_${{ matrix.python-version }}_$TIMESTAMP.txt
+        git config --global user.email "mail@benedikt-eickhoff.de"
+        git config --global user.name "Benedikt Eickhoff"
+        git add test_logs/${{ matrix.python-version }}/test_log_${{ matrix.python-version }}_$TIMESTAMP.txt
+        git commit -m "Adding test logs for Python ${{ matrix.python-version }} run on $TIMESTAMP"
+        git push origin refactor-fastapi
