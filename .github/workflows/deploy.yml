@@ -1,9 +1,6 @@
-name: Deploy to Lightsail
+name: Manual Deployment
 
 on:
-  push:
-    branches:
-      - main  # Trigger when changes are pushed to the main branch
   workflow_dispatch:  # Allow manual trigger from the GitHub Actions tab
 
 jobs:
@@ -11,16 +8,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Check if actor is repository owner
+      run: |
+        if [[ "${{ github.actor }}" != "${{ github.repository_owner }}" ]]; then
+          echo "You are not authorized to run this workflow."
+          exit 1
+        fi
+      # This step runs only if the person triggering is the repository owner
+
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Pull repo changes and restart FastAPI and NGINX on Lightsail
+    - name: Deploy to Lightsail
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.LIGHTSAIL_SERVER_IP }} << EOF
           cd ~/fountainai-fastapi-proxy
           git pull origin main
           sudo systemctl restart fastapi
           sudo systemctl restart nginx
-          sudo systemctl status fastapi
-          sudo systemctl status nginx
         EOF
