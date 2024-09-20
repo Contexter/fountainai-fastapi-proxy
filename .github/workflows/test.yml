@@ -1,0 +1,32 @@
+# .github/workflows/test.yml
+# GitHub Actions workflow to run tests on refactored app.
+
+name: Run Tests on Refactored App
+
+# Run the workflow on push to the test-deployment-branch
+on:
+  push:
+    branches:
+      - test-deployment-branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi pytest httpx uvicorn
+
+    - name: Run tests
+      run: |
+        pytest tests/
