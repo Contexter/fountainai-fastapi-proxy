@@ -463,3 +463,25 @@ To install, run: pip install email-validator
 2024-09-20 04:30:26,721 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/a7c3ab13c6ffd556d0c7b938d131a4364ac4c491 HTTP/11" 200 None
 2024-09-20 04:30:26,722 - INFO - File is small enough to retrieve without chunking.
 2024-09-20 04:30:26,724 - INFO - Successfully fetched lines from main.py
+2024-09-20 04:49:26,964 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents
+2024-09-20 04:49:26,965 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 04:49:27,195 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents HTTP/11" 200 649
+2024-09-20 04:49:29,215 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/FountainAI-Book/contents/chapters
+2024-09-20 04:49:29,216 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 04:49:29,442 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters HTTP/11" 200 1020
+2024-09-20 04:49:32,860 - INFO - Fetching lines from file: chapters/chapter7.md in repo: FountainAI-Book
+2024-09-20 04:49:32,861 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 04:49:33,118 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters/chapter7.md HTTP/11" 200 None
+2024-09-20 04:49:33,121 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 04:49:33,316 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/e1552ce551e3656783fffc967dbdafcc6cca01e3 HTTP/11" 206 4423
+2024-09-20 04:49:33,318 - INFO - Successfully fetched lines from chapters/chapter7.md
+2024-09-20 05:48:08,865 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents
+2024-09-20 05:48:08,865 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 05:48:09,063 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents HTTP/11" 200 980
+2024-09-20 05:48:14,066 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/contents/app
+2024-09-20 05:48:14,068 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 05:48:14,286 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/app HTTP/11" 404 126
+2024-09-20 05:48:14,286 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}
+2024-09-20 05:52:29,023 - INFO - Making GitHub API request to: https://api.github.com/repos/Contexter/fountainai-fastapi-proxy/branches
+2024-09-20 05:52:29,024 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-20 05:52:29,329 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/branches HTTP/11" 200 226
