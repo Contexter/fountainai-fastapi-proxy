@@ -113,4 +113,139 @@ def get_file_chunk(owner: str, repo: str, sha: str, start_byte: int, chunk_size:
         raise HTTPException(status_code=500, detail="Error fetching file chunk.")
     return response.content.decode("utf-8")
 
-# Rest of the functions remain the same...
+# Function to calculate total lines in a file
+def count_total_lines(owner: str, repo: str, path: str):
+    logging.info(f"Counting lines for {path} in {repo}")
+    
+    try:
+        metadata = github_request(f"repos/{owner}/{repo}/contents/{path}")
+        file_data = metadata.json()
+        file_size = file_data.get("size", 0)
+        sha = file_data.get("sha")
+    except requests.exceptions.RequestException as e:
+        error_info = {
+            "error": str(e),
+            "endpoint": f"repos/{owner}/{repo}/contents/{path}",
+            "owner": owner,
+            "repo": repo,
+            "path": path,
+            "suggestions": [
+                "Check if the file exists and is accessible.",
+                "Ensure that the repository and file path are correct."
+            ],
+        }
+        logging.error(f"Failed to count lines for {path} in {repo}: {error_info}")
+        raise HTTPException(status_code=500, detail=error_info)
+    
+    total_lines = 0
+    carry_over = ""
+    start_byte = 0
+    
+    while start_byte < file_size:
+        chunk = get_file_chunk(owner, repo, sha, start_byte, CHUNK_SIZE)
+        lines, carry_over = process_chunk(chunk, carry_over)
+        total_lines += len(lines)
+        start_byte += CHUNK_SIZE
+
+    logging.info(f"Total number of lines in {path}: {total_lines}")
+    return total_lines
+
+# Helper function to process chunk into lines
+def process_chunk(chunk, carry_over):
+    content = carry_over + chunk
+    lines = content.splitlines(keepends=True)
+    if not content.endswith("\n"):
+        carry_over = lines.pop()
+    else:
+        carry_over = ""
+    return lines, carry_over
+
+# Fetch file lines by range
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines",
+    operation_id="getFileLinesByRange",
+    summary="Get file lines by range",
+    description="Retrieves a specific range of lines from a file in a GitHub repository. This route is optimized to prevent out-of-range errors by validating the requested line range."
+)
+def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
+    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
+
+    try:
+        total_lines = count_total_lines(owner, repo, path)
+
+        if start_line < 0 or start_line >= total_lines:
+            raise HTTPException(status_code=400, detail=f"Start line is out of range. The file has {total_lines} lines.")
+
+        if end_line is None or end_line > total_lines:
+            end_line = total_lines
+
+        total_content = get_file_content(owner, repo, path)["content"]
+        lines = total_content.splitlines()
+        return {"lines": lines[start_line:end_line], "max_lines": total_lines}
+
+    except requests.exceptions.RequestException as e:
+        error_info = {
+            "error": str(e),
+            "endpoint": f"repos/{owner}/{repo}/contents/{path}",
+            "owner": owner,
+            "repo": repo,
+            "path": path,
+            "suggestions": [
+                "Check if the line range is valid.",
+                "Ensure the file exists in the repository and contains readable content.",
+                "If this is a large file, consider chunking your requests for better performance."
+            ],
+        }
+        logging.error(f"Failed to retrieve lines from {path} in {repo}: {error_info}")
+        raise HTTPException(status_code=500, detail=error_info)
+
+# Get the maximum number of lines in the file
+@app.get("/repo/{owner}/{repo}/file/{path:path}/max-lines",
+    operation_id="getMaxLinesInFile",
+    summary="Get maximum line count in file",
+    description="Calculates and returns the total number of lines in a file. This is useful for validating line ranges before making a request for specific lines."
+)
+def get_max_lines(owner: str, repo: str, path: str):
+    try:
+        total_lines = count_total_lines(owner, repo, path)
+        return {"max_lines": total_lines}
+    except requests.exceptions.RequestException as e:
+        error_info = {
+            "error": str(e),
+            "endpoint": f"repos/{owner}/{repo}/contents/{path}",
+            "owner": owner,
+            "repo": repo,
+            "path": path,
+            "suggestions": [
+                "Check if the file exists and is accessible.",
+                "Ensure that the repository and file path are correct."
+            ],
+        }
+        logging.error(f"Failed to calculate max lines for {path} in {repo}: {error_info}")
+        raise HTTPException(status_code=500, detail=error_info)
+
+# Fetch recent commits for the repository
+@app.get("/repo/{owner}/{repo}/commits",
+    operation_id="getRecentCommits",
+    summary="Get recent commits",
+    description="Retrieves the most recent commit history for a GitHub repository. This is useful for tracking recent changes to files or the repository structure."
+)
+def get_recent_commits(owner: str, repo: str):
+    logging.info(f"Fetching recent commits for {repo} by {owner}")
+    try:
+        endpoint = f"repos/{owner}/{repo}/commits"
+        commits = github_request(endpoint)
+        return commits.json()
+    except requests.exceptions.RequestException as e:
+        error_info = {
+            "error": str(e),
+            "endpoint": endpoint,
+            "owner": owner,
+            "repo": repo,
+            "suggestions": [
+                "Ensure the repository is public or accessible with proper permissions.",
+                "Check if the repository name and owner are correct.",
+                "Ensure the repository has a valid commit history."
+            ],
+        }
+        logging.error(f"Failed to retrieve commits for {repo}: {error_info}")
+        raise HTTPException(status_code=500, detail=error_info)
