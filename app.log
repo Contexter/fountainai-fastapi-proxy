@@ -1487,3 +1487,25 @@ To install, run: pip install email-validator
 2024-09-23 04:35:40,264 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-23 04:35:40,468 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-fastapi-proxy/git/blobs/a7c3ab13c6ffd556d0c7b938d131a4364ac4c491 HTTP/11" 206 3427
 2024-09-23 04:35:40,472 - INFO - Successfully fetched lines from main.py
+2024-09-23 05:15:56,822 - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2024-09-23 05:18:24,314 - INFO - Counting lines for README.md in FountainAI-Book
+2024-09-23 05:18:24,316 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:18:24,548 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3584
+2024-09-23 05:18:24,549 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:18:24,769 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/117b98b0c99367a9362236a23018ced3b72932fe HTTP/11" 206 2069
+2024-09-23 05:18:24,771 - INFO - Total number of lines in README.md: 63
+2024-09-23 05:18:26,910 - INFO - Retrieving comprehensive file content for README.md in FountainAI-Book
+2024-09-23 05:18:26,911 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:18:26,977 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/README.md HTTP/11" 200 3584
+2024-09-23 05:18:26,979 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:18:27,052 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/117b98b0c99367a9362236a23018ced3b72932fe HTTP/11" 206 2069
+2024-09-23 05:19:43,946 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:19:44,163 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters HTTP/11" 200 1320
+2024-09-23 05:19:57,306 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:19:57,385 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters HTTP/11" 200 1320
+2024-09-23 05:20:34,338 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:20:34,548 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents HTTP/11" 200 651
+2024-09-23 05:22:58,819 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 05:22:59,024 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/https://github.com/Contexter/FountainAI-Book/tree/main HTTP/11" 404 126
+2024-09-23 05:22:59,025 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}
