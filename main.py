@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import FastAPI, HTTPException
 import requests
 from typing import Optional
 import logging
@@ -7,7 +7,13 @@ app = FastAPI(
     title="FountainAI GitHub Repository File Content API",
     version="1.1.0",
     description="This API enables efficient retrieval and management of file content from GitHub repositories. It returns file paths in the same format as GitHub's 'Copy file path' feature.",
-    openapi_version="3.1.0"
+    openapi_version="3.1.0",
+    servers=[
+        {
+            "url": "https://proxy.fountain.coach",
+            "description": "Production server"
+        }
+    ]
 )
 
 GITHUB_API_URL = "https://api.github.com"
@@ -31,6 +37,11 @@ def github_request(endpoint: str, headers=None):
         logging.error(f"GitHub API error: {response.status_code}, {response.text}")
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response
+
+# Root endpoint with welcome message
+@app.get("/", summary="Welcome")
+def welcome():
+    return {"message": "Welcome to FountainAI GitHub Repository File Content API"}
 
 # Fetch the repository directory structure (recursive tree)
 @app.get("/repo/{owner}/{repo}/tree",
