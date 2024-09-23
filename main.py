@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 import requests
 from typing import Optional
 import logging
@@ -17,6 +17,8 @@ app = FastAPI(
 )
 
 GITHUB_API_URL = "https://api.github.com"
+GITHUB_GRAPHQL_API_URL = "https://api.github.com/graphql"
+GITHUB_TOKEN = "your_github_token_here"  # Replace with your GitHub token
 CHUNK_SIZE = 50000  # 50 KB chunk size for large files
 MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for comprehensive retrieval
 
@@ -38,6 +40,17 @@ def github_request(endpoint: str, headers=None):
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response
 
+# Helper function to query GitHub GraphQL API
+def github_graphql_query(query: str, variables: dict = {}):
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    response = requests.post(GITHUB_GRAPHQL_API_URL, json={"query": query, "variables": variables}, headers=headers)
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+    return response.json()
+
 # Root endpoint with welcome message
 @app.get("/", summary="Welcome")
 def welcome():
@@ -54,7 +67,6 @@ def get_repo_tree(owner: str, repo: str):
     try:
         endpoint = f"repos/{owner}/{repo}/git/trees/main?recursive=1"
         tree_data = github_request(endpoint)
-        # Extract the relevant part of the tree to return in "Copy file path" format
         paths = []
         for item in tree_data.json().get("tree", []):
             if item["type"] == "blob":  # Only include files, not directories
@@ -124,6 +136,43 @@ def get_file_chunk(owner: str, repo: str, sha: str, start_byte: int, chunk_size:
         raise HTTPException(status_code=500, detail="Error fetching file chunk.")
     return response.content.decode("utf-8")
 
+# Fetch file lines by range
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines",
+    operation_id="getFileLinesByRange",
+    summary="Get file lines by range",
+    description="Retrieves a specific range of lines from a file in a GitHub repository. This route is optimized to prevent out-of-range errors by validating the requested line range."
+)
+def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
+    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
+    try:
+        total_lines = count_total_lines(owner, repo, path)
+
+        if start_line < 0 or start_line >= total_lines:
+            raise HTTPException(status_code=400, detail=f"Start line is out of range. The file has {total_lines} lines.")
+
+        if end_line is None or end_line > total_lines:
+            end_line = total_lines
+
+        total_content = get_file_content(owner, repo, path)["content"]
+        lines = total_content.splitlines()
+        return {"lines": lines[start_line:end_line], "max_lines": total_lines}
+
+    except requests.exceptions.RequestException as e:
+        error_info = {
+            "error": str(e),
+            "endpoint": f"repos/{owner}/{repo}/contents/{path}",
+            "owner": owner,
+            "repo": repo,
+            "path": path,
+            "suggestions": [
+                "Check if the line range is valid.",
+                "Ensure the file exists in the repository and contains readable content.",
+                "If this is a large file, consider chunking your requests for better performance."
+            ],
+        }
+        logging.error(f"Failed to retrieve lines from {path} in {repo}: {error_info}")
+        raise HTTPException(status_code=500, detail=error_info)
+
 # Function to calculate total lines in a file
 def count_total_lines(owner: str, repo: str, path: str):
     logging.info(f"Counting lines for {path} in {repo}")
@@ -171,44 +220,6 @@ def process_chunk(chunk, carry_over):
         carry_over = ""
     return lines, carry_over
 
-# Fetch file lines by range
-@app.get("/repo/{owner}/{repo}/file/{path:path}/lines",
-    operation_id="getFileLinesByRange",
-    summary="Get file lines by range",
-    description="Retrieves a specific range of lines from a file in a GitHub repository. This route is optimized to prevent out-of-range errors by validating the requested line range."
-)
-def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
-    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
-
-    try:
-        total_lines = count_total_lines(owner, repo, path)
-
-        if start_line < 0 or start_line >= total_lines:
-            raise HTTPException(status_code=400, detail=f"Start line is out of range. The file has {total_lines} lines.")
-
-        if end_line is None or end_line > total_lines:
-            end_line = total_lines
-
-        total_content = get_file_content(owner, repo, path)["content"]
-        lines = total_content.splitlines()
-        return {"lines": lines[start_line:end_line], "max_lines": total_lines}
-
-    except requests.exceptions.RequestException as e:
-        error_info = {
-            "error": str(e),
-            "endpoint": f"repos/{owner}/{repo}/contents/{path}",
-            "owner": owner,
-            "repo": repo,
-            "path": path,
-            "suggestions": [
-                "Check if the line range is valid.",
-                "Ensure the file exists in the repository and contains readable content.",
-                "If this is a large file, consider chunking your requests for better performance."
-            ],
-        }
-        logging.error(f"Failed to retrieve lines from {path} in {repo}: {error_info}")
-        raise HTTPException(status_code=500, detail=error_info)
-
 # Get the maximum number of lines in the file
 @app.get("/repo/{owner}/{repo}/file/{path:path}/max-lines",
     operation_id="getMaxLinesInFile",
@@ -235,28 +246,66 @@ def get_max_lines(owner: str, repo: str, path: str):
         raise HTTPException(status_code=500, detail=error_info)
 
 # Fetch recent commits for the repository
-@app.get("/repo/{owner}/{repo}/commits",
-    operation_id="getRecentCommits",
-    summary="Get recent commits",
-    description="Retrieves the most recent commit history for a GitHub repository. This is useful for tracking recent changes to files or the repository structure."
-)
-def get_recent_commits(owner: str, repo: str):
-    logging.info(f"Fetching recent commits for {repo} by {owner}")
-    try:
-        endpoint = f"repos/{owner}/{repo}/commits"
-        commits = github_request(endpoint)
-        return commits.json()
-    except requests.exceptions.RequestException as e:
-        error_info = {
-            "error": str(e),
-            "endpoint": endpoint,
-            "owner": owner,
-            "repo": repo,
-            "suggestions": [
-                "Ensure the repository is public or accessible with proper permissions.",
-                "Check if the repository name and owner are correct.",
-                "Ensure the repository has a valid commit history."
-            ],
+@app.get("/repo/{owner}/{repo}/commits")
+def get_commits_by_date(
+    owner: str,
+    repo: str,
+    limit: int = Query(5, description="Number of commits to fetch per page"),
+    cursor: Optional[str] = Query(None, description="Cursor for fetching the next page of commits"),
+    start_date: Optional[str] = Query(None, description="Filter commits starting from this date (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="Filter commits until this date (YYYY-MM-DD)")
+):
+    """
+    Fetch the most recent commits from a GitHub repository, with pagination support and optional date filtering.
+    """
+    query = """
+    query($owner: String!, $repo: String!, $limit: Int!, $cursor: String) {
+      repository(owner: $owner, name: $repo) {
+        ref(qualifiedName: "main") {
+          target {
+            ... on Commit {
+              history(first: $limit, after: $cursor) {
+                edges {
+                  cursor
+                  node {
+                    message
+                    committedDate
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
+            }
+          }
         }
-        logging.error(f"Failed to retrieve commits for {repo}: {error_info}")
-        raise HTTPException(status_code=500, detail=error_info)
+      }
+    }
+    """
+    
+    variables = {"owner": owner, "repo": repo, "limit": limit, "cursor": cursor}
+    result = github_graphql_query(query, variables)
+    
+    # Filter commits by date if start_date and end_date are provided
+    commits = []
+    for commit in result["data"]["repository"]["ref"]["target"]["history"]["edges"]:
+        commit_date = commit["node"]["committedDate"]
+        
+        # Only add the commit if it's within the specified date range
+        if (not start_date or commit_date >= start_date) and (not end_date or commit_date <= end_date):
+            commits.append({
+                "message": commit["node"]["message"],
+                "cursor": commit["cursor"],
+                "committedDate": commit_date
+            })
+    
+    page_info = result["data"]["repository"]["ref"]["target"]["history"]["pageInfo"]
+    
+    return {
+        "commits": commits,
+        "pageInfo": {
+            "hasNextPage": page_info["hasNextPage"],
+            "endCursor": page_info["endCursor"]
+        }
+    }
