@@ -1,8 +1,10 @@
+import os
 from fastapi import FastAPI, HTTPException, Query
 import requests
 from typing import Optional
 import logging
 
+# Set up FastAPI app with OpenAPI versioning and custom settings
 app = FastAPI(
     title="FountainAI GitHub Repository File Content API",
     version="1.1.0",
@@ -16,9 +18,13 @@ app = FastAPI(
     ]
 )
 
+# Load the GitHub token from environment variables for security
 GITHUB_API_URL = "https://api.github.com"
 GITHUB_GRAPHQL_API_URL = "https://api.github.com/graphql"
-GITHUB_TOKEN = "your_github_token_here"  # Replace with your GitHub token
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # Now loaded securely from environment variables
+if not GITHUB_TOKEN:
+    raise HTTPException(status_code=500, detail="GitHub token not found in environment variables")
+
 CHUNK_SIZE = 50000  # 50 KB chunk size for large files
 MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for comprehensive retrieval
 
@@ -29,11 +35,11 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Helper function to make requests to GitHub API
+# Helper function to make requests to GitHub API using the token from env variables
 def github_request(endpoint: str, headers=None):
     url = f"{GITHUB_API_URL}/{endpoint}"
     if headers is None:
-        headers = {"Accept": "application/vnd.github.v3+json"}
+        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.get(url, headers=headers)
     if response.status_code not in [200, 206]:
         logging.error(f"GitHub API error: {response.status_code}, {response.text}")
@@ -246,7 +252,7 @@ def get_max_lines(owner: str, repo: str, path: str):
         raise HTTPException(status_code=500, detail=error_info)
 
 # Fetch recent commits for the repository
-@app.get("/repo/{owner}/{repo}/commits")
+@app.get("/repo/{owner}/{repo}/commits", summary="Fetch GitHub commit history with pagination support")
 def get_commits_by_date(
     owner: str,
     repo: str,
