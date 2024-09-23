@@ -5,18 +5,18 @@ import logging
 import os
 from datetime import datetime
 
-# Set up verbose logging to capture all log levels and write to a log file
+# Set up logging to capture all log levels and write to a log file
 logging.basicConfig(
     filename='app.log',
-    level=logging.DEBUG,   # Capture DEBUG level logs for full verbosity
+    level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Define the FastAPI app and set the production server
+# Initialize the FastAPI app and define production server settings
 app = FastAPI(
     title="FountainAI GitHub Repository Controller",
-    description="A non-destructive proxy to retrieve metadata, file contents, commit history, pull requests, issues, and traffic insights from the FountainAI GitHub repository.",
-    version="1.0.0",
+    description="A proxy API for retrieving metadata, file contents, commit history, pull requests, issues, and traffic insights from a GitHub repository. It also handles file chunking for large files.",
+    version="1.1.0",
     contact={
         "name": "FountainAI",
         "email": "mail@benedikt-eickhoff.de"
@@ -31,148 +31,145 @@ app = FastAPI(
 
 GITHUB_API_URL = "https://api.github.com"
 CHUNK_SIZE = 50000  # 50 KB chunk size for large files
-MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for GitHub API
+MAX_FILE_SIZE_BYTES = 1024 * 1024  # 1 MB soft limit for comprehensive retrieval
 
 # Helper function to make requests to GitHub API
-def github_request(endpoint: str, params=None, headers=None):
+def github_request(endpoint: str, headers=None):
     url = f"{GITHUB_API_URL}/{endpoint}"
     if headers is None:
-        headers = {
-            "Accept": "application/vnd.github.v3+json"
-        }
-    logging.info(f"Making GitHub API request to: {url}")
-    response = requests.get(url, headers=headers, params=params)
-    
+        headers = {"Accept": "application/vnd.github.v3+json"}
+    response = requests.get(url, headers=headers)
     if response.status_code not in [200, 206]:
         logging.error(f"GitHub API error: {response.status_code}, {response.text}")
-        raise HTTPException(status_code=response.status_code, detail=response.json())
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+    return response
+
+# Helper function to fetch file content in chunks
+def get_file_chunk(owner: str, repo: str, sha: str, start_byte: int, chunk_size: int):
+    url = f"https://api.github.com/repos/{owner}/{repo}/git/blobs/{sha}"
+    headers = {"Accept": "application/vnd.github.v3.raw", "Range": f"bytes={start_byte}-{start_byte + chunk_size - 1}"}
+    response = requests.get(url, headers=headers)
+    if response.status_code != 206 and response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Error fetching file chunk.")
+    return response.content.decode("utf-8")
+
+# Function to calculate the total number of lines in a file
+def count_total_lines(owner: str, repo: str, path: str):
+    logging.info(f"Counting lines for {path} in {repo}")
     
-    return response.json()
-
-# Route to retrieve specific lines from a large file
-@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", operation_id="get_file_lines", summary="Retrieve file content by line range",
-         description="Get a specific range of lines from a large file in the repository.")
-def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
-    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
-
-    if start_line < 0 or (end_line is not None and end_line < start_line):
-        raise HTTPException(status_code=400, detail="Invalid line range.")
-
-    # Variables for tracking progress
-    start_byte = 0
-    total_lines = []
-    carry_over = ""
-
-    # Fetch the file's SHA (GitHub-specific, assuming this is needed)
     try:
-        file_sha = get_file_sha(owner, repo, path)
+        metadata = github_request(f"repos/{owner}/{repo}/contents/{path}")
+        file_data = metadata.json()
+        file_size = file_data.get("size", 0)
+        sha = file_data.get("sha")
     except Exception as e:
-        logging.error(f"Error fetching SHA for file {path}: {e}")
-        raise HTTPException(status_code=500, detail=f"Error fetching SHA: {str(e)}")
-
-    # Process chunks until we gather all requested lines
-    while len(total_lines) < (end_line or start_line + 100):
-        try:
-            # Fetch file in chunks
-            chunk = get_file_in_chunks(owner, repo, file_sha, start_byte, CHUNK_SIZE)  # Fetch chunk
-        except Exception as e:
-            logging.error(f"Error fetching file chunk for {path}: {e}")
-            raise HTTPException(status_code=500, detail=f"Error fetching file chunk: {str(e)}")
-
-        # Process the chunk into lines
+        raise HTTPException(status_code=500, detail=f"Error fetching file metadata: {str(e)}")
+    
+    total_lines = 0
+    carry_over = ""
+    start_byte = 0
+    
+    while start_byte < file_size:
+        chunk = get_file_chunk(owner, repo, sha, start_byte, CHUNK_SIZE)
         lines, carry_over = process_chunk(chunk, carry_over)
-        total_lines.extend(lines)
-
-        # Update byte pointer for the next chunk
+        total_lines += len(lines)
         start_byte += CHUNK_SIZE
 
-    logging.info(f"Successfully fetched lines from {path}")
-    
-    # Return the requested lines
-    return {"lines": total_lines[start_line:end_line]}
+    logging.info(f"Total number of lines in {path}: {total_lines}")
+    return total_lines
 
-# Fetch file content in chunks by byte-range
-def get_file_in_chunks(owner, repo, sha, start_byte, chunk_size):
-    url = f"https://api.github.com/repos/{owner}/{repo}/git/blobs/{sha}"
-    headers = {
-        "Accept": "application/vnd.github.v3.raw",
-        "Range": f"bytes={start_byte}-{start_byte + chunk_size - 1}"
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200 and "Range" not in response.headers:
-        logging.info("File is small enough to retrieve without chunking.")
-        return response.content
-    elif response.status_code != 206:  # Expecting Partial Content for chunked files
-        logging.error(f"Failed to fetch chunk from file, status code: {response.status_code}")
-        raise HTTPException(status_code=response.status_code, detail="Failed to fetch file chunk.")
-    return response.content
-
-# Process a chunk into lines, handling incomplete lines
+# Helper function to process a chunk of content into lines
 def process_chunk(chunk, carry_over):
-    # Combine the chunk with any remaining content from the previous chunk
-    content = carry_over + chunk.decode("utf-8")
-    
-    # Split the content into lines
+    content = carry_over + chunk
     lines = content.splitlines(keepends=True)  # Keep end-of-line characters
-    
-    # Handle the case where the last line may be incomplete
     if not content.endswith("\n"):
-        carry_over = lines.pop()  # Store the incomplete last line for the next chunk
+        carry_over = lines.pop()  # Store incomplete last line for the next chunk
     else:
         carry_over = ""
-    
     return lines, carry_over
 
-# Get file SHA using GitHub API
-def get_file_sha(owner, repo, path):
-    url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
-    response = requests.get(url)
-    if response.status_code != 200:
-        logging.error(f"Failed to retrieve file SHA for {path}")
-        raise HTTPException(status_code=response.status_code, detail="Failed to retrieve file SHA.")
-    return response.json().get("sha")
+# Retrieve file content in chunks or entirely, based on file size
+@app.get("/repo/{owner}/{repo}/file/{path:path}/content", summary="Get comprehensive file content")
+def get_comprehensive_file_content(owner: str, repo: str, path: str):
+    logging.info(f"Retrieving comprehensive file content for {path} in {repo}")
+    
+    try:
+        metadata = github_request(f"repos/{owner}/{repo}/contents/{path}")
+        file_data = metadata.json()
+        file_size = file_data.get("size", 0)
+        sha = file_data.get("sha")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching file metadata: {str(e)}")
+    
+    total_content = ""
+    start_byte = 0
+    
+    while start_byte < file_size:
+        chunk = get_file_chunk(owner, repo, sha, start_byte, CHUNK_SIZE)
+        total_content += chunk
+        start_byte += CHUNK_SIZE
+    
+    return total_content
 
-# Route to retrieve repository information
-@app.get("/repo/{owner}/{repo}", operation_id="get_repo_info", summary="Retrieve repository metadata",
-         description="Retrieve metadata about the repository, including stars, forks, watchers, open issues, default branch, visibility (public/private), and description.")
+# Function to retrieve file lines by a specified range, returning max lines for debugging
+@app.get("/repo/{owner}/{repo}/file/{path:path}/lines", summary="Fetch file content by line range")
+def get_lines_by_range(owner: str, repo: str, path: str, start_line: int = 0, end_line: Optional[int] = None):
+    logging.info(f"Fetching lines from file: {path} in repo: {repo}")
+    
+    total_lines = count_total_lines(owner, repo, path)
+    
+    if start_line < 0 or start_line >= total_lines:
+        raise HTTPException(status_code=400, detail=f"Start line is out of range. The file has {total_lines} lines.")
+    if end_line is None or end_line > total_lines:
+        end_line = total_lines
+    
+    try:
+        total_content = get_comprehensive_file_content(owner, repo, path)
+        lines = total_content.splitlines()
+        return {"lines": lines[start_line:end_line], "max_lines": total_lines}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching lines: {str(e)}")
+
+# New route to return only the maximum number of lines in a file
+@app.get("/repo/{owner}/{repo}/file/{path:path}/max-lines", summary="Get maximum line count in file")
+def get_max_lines(owner: str, repo: str, path: str):
+    try:
+        total_lines = count_total_lines(owner, repo, path)
+        return {"max_lines": total_lines}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error calculating total lines: {str(e)}")
+
+# Fetch repository metadata
+@app.get("/repo/{owner}/{repo}", summary="Retrieve repository metadata")
 def get_repo_info(owner: str = Path(..., description="GitHub username or organization"),
                   repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}"
     return github_request(endpoint)
 
-# Route to list repository contents
-@app.get("/repo/{owner}/{repo}/contents", operation_id="list_repo_contents", summary="List repository contents",
-         description="List the files and directories in the repository, including file names, file size, type (file or directory), and download URLs.")
+# List contents of the repository
+@app.get("/repo/{owner}/{repo}/contents", summary="List repository contents")
 def list_repo_contents(owner: str = Path(..., description="GitHub username or organization"),
                        repo: str = Path(..., description="Repository name"),
                        path: Optional[str] = None):
     endpoint = f"repos/{owner}/{repo}/contents/{path}" if path else f"repos/{owner}/{repo}/contents"
     return github_request(endpoint)
 
-# Route to commit and push logs to GitHub
+# Push log updates to GitHub
 def commit_and_push_logs():
     try:
-        # Get the current working directory (assumed to be the repo path)
         repo_path = os.getcwd()
-
-        # Check if the current directory is a Git repository
         if not os.path.exists(os.path.join(repo_path, '.git')):
             raise Exception("Current directory is not a Git repository.")
-
-        # Commit message with timestamp
+        
         commit_message = f"Log update: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-
-        # Stage the log file, commit, and push
-        os.system('git add app.log')  # Stage the log file
-        os.system(f'git commit -m "{commit_message}"')  # Commit with a message
-        os.system('git push origin main')  # Push to the main branch
-
+        os.system('git add app.log')
+        os.system(f'git commit -m \"{commit_message}\"')
+        os.system('git push origin main')
+        
         return "Logs have been successfully committed and pushed to GitHub."
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error committing logs: {str(e)}")
 
-# Route to trigger log push
 @app.get("/push-logs", summary="Push logs to GitHub", description="Triggers a log commit and pushes it to GitHub.")
 async def push_logs():
     try:
@@ -181,49 +178,43 @@ async def push_logs():
     except HTTPException as e:
         return {"error": e.detail}
 
-# Route to retrieve commit history
-@app.get("/repo/{owner}/{repo}/commits", operation_id="get_commit_history", summary="Retrieve commit history",
-         description="Get a list of commits in the repository, including the author, commit message, timestamp, and files changed in each commit.")
+# Retrieve commit history of the repository
+@app.get("/repo/{owner}/{repo}/commits", summary="Retrieve commit history")
 def get_commit_history(owner: str = Path(..., description="GitHub username or organization"),
                        repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/commits"
     return github_request(endpoint)
 
-# Route to retrieve pull requests
-@app.get("/repo/{owner}/{repo}/pulls", operation_id="list_pull_requests", summary="List pull requests",
-         description="Retrieve a list of pull requests for the repository, including title, status (open, closed, merged), author, and review status.")
+# Retrieve pull requests for the repository
+@app.get("/repo/{owner}/{repo}/pulls", summary="List pull requests")
 def list_pull_requests(owner: str = Path(..., description="GitHub username or organization"),
                        repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/pulls"
     return github_request(endpoint)
 
-# Route to retrieve issues
-@app.get("/repo/{owner}/{repo}/issues", operation_id="list_issues", summary="List issues",
-         description="Retrieve a list of issues for the repository, including title, status (open or closed), author, and assigned labels.")
+# Retrieve issues for the repository
+@app.get("/repo/{owner}/{repo}/issues", summary="List issues")
 def list_issues(owner: str = Path(..., description="GitHub username or organization"),
                 repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/issues"
     return github_request(endpoint)
 
-# Route to retrieve repository branches
-@app.get("/repo/{owner}/{repo}/branches", operation_id="list_branches", summary="List repository branches",
-         description="Retrieve a list of branches in the repository, including branch name and whether the branch is protected.")
+# List branches in the repository
+@app.get("/repo/{owner}/{repo}/branches", summary="List repository branches")
 def list_branches(owner: str = Path(..., description="GitHub username or organization"),
                   repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/branches"
     return github_request(endpoint)
 
-# Route to retrieve traffic views
-@app.get("/repo/{owner}/{repo}/traffic/views", operation_id="get_traffic_views", summary="Retrieve repository traffic views",
-         description="Get the number of views for the repository over a specified time period.")
+# Retrieve repository traffic views
+@app.get("/repo/{owner}/{repo}/traffic/views", summary="Retrieve repository traffic views")
 def get_repo_traffic_views(owner: str = Path(..., description="GitHub username or organization"),
                            repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/traffic/views"
     return github_request(endpoint)
 
-# Route to retrieve traffic clones
-@app.get("/repo/{owner}/{repo}/traffic/clones", operation_id="get_traffic_clones", summary="Retrieve repository traffic clones",
-         description="Get the number of times the repository has been cloned over a specified time period.")
+# Retrieve repository traffic clones
+@app.get("/repo/{owner}/{repo}/traffic/clones", summary="Retrieve repository traffic clones")
 def get_repo_traffic_clones(owner: str = Path(..., description="GitHub username or organization"),
                             repo: str = Path(..., description="Repository name")):
     endpoint = f"repos/{owner}/{repo}/traffic/clones"
