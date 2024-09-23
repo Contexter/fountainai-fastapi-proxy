@@ -1509,3 +1509,63 @@ To install, run: pip install email-validator
 2024-09-23 05:22:58,819 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
 2024-09-23 05:22:59,024 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/https://github.com/Contexter/FountainAI-Book/tree/main HTTP/11" 404 126
 2024-09-23 05:22:59,025 - ERROR - GitHub API error: 404, {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}
+2024-09-23 06:30:46,534 - INFO - Fetching repository tree for FountainAI-Book by Contexter
+2024-09-23 06:30:46,537 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:30:46,743 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/trees/main?recursive=1 HTTP/11" 200 1387
+2024-09-23 06:31:24,224 - INFO - Fetching file content for chapters/chapter14.md in FountainAI-Book by Contexter
+2024-09-23 06:31:24,225 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:31:24,451 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters/chapter14.md HTTP/11" 200 None
+2024-09-23 06:31:24,453 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:31:24,658 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/1463116cd2457612ccd72cda3c0e6b56e423450d HTTP/11" 200 None
+2024-09-23 06:41:12,572 - INFO - Fetching repository tree for FountainAI-Book by Contexter
+2024-09-23 06:41:12,572 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:41:12,783 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/trees/main?recursive=1 HTTP/11" 200 1387
+2024-09-23 06:41:53,877 - INFO - Fetching file content for chapters/chapter11.md in FountainAI-Book by Contexter
+2024-09-23 06:41:53,879 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:41:54,155 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/contents/chapters/chapter11.md HTTP/11" 200 None
+2024-09-23 06:41:54,156 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:41:54,341 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/git/blobs/a4c75865bc3c090db13c5c2c94c12373c3cf307c HTTP/11" 200 None
+2024-09-23 06:45:17,604 - INFO - Fetching recent commits for FountainAI-Book by Contexter
+2024-09-23 06:45:17,608 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:45:17,990 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/commits HTTP/11" 200 None
+2024-09-23 06:45:51,069 - INFO - Fetching recent commits for FountainAI-Book by Contexter
+2024-09-23 06:45:51,071 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:45:51,370 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/commits HTTP/11" 200 None
+2024-09-23 06:46:11,238 - INFO - Fetching recent commits for FountainAI-Book by Contexter
+2024-09-23 06:46:11,239 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:46:11,300 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/commits HTTP/11" 200 17479
+2024-09-23 06:46:33,538 - INFO - Fetching recent commits for FountainAI-Book by Contexter
+2024-09-23 06:46:33,539 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:46:33,854 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/commits HTTP/11" 200 None
+2024-09-23 06:47:32,098 - INFO - Fetching recent commits for FountainAI-Book by Contexter
+2024-09-23 06:47:32,100 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:47:32,373 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/FountainAI-Book/commits HTTP/11" 200 None
+2024-09-23 06:56:19,924 - INFO - Fetching file content for main.py in fountainai-fastapi-proxy by Contexter
+2024-09-23 06:56:19,926 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:56:20,161 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/main.py HTTP/11" 200 None
+2024-09-23 06:56:20,163 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 06:56:20,354 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/df201b2fb7e9f81439e68dd76f11c529db295804 HTTP/11" 206 3147
+2024-09-23 09:01:47,220 - INFO - Fetching repository tree for fountainai-fastapi-proxy by Contexter
+2024-09-23 09:01:47,222 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:01:47,468 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/trees/main?recursive=1 HTTP/11" 200 733
+2024-09-23 09:01:52,612 - INFO - Fetching file content for main.py in fountainai-fastapi-proxy by Contexter
+2024-09-23 09:01:52,614 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:01:52,845 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/main.py HTTP/11" 200 None
+2024-09-23 09:01:52,846 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:01:53,056 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/df201b2fb7e9f81439e68dd76f11c529db295804 HTTP/11" 206 3147
+2024-09-23 09:01:55,065 - INFO - Fetching repository tree for Fountainai-Book by Contexter
+2024-09-23 09:01:55,066 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:01:55,311 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Fountainai-Book/git/trees/main?recursive=1 HTTP/11" 200 1440
+2024-09-23 09:01:59,608 - INFO - Fetching file content for chapters/chapter15.md in Fountainai-Book by Contexter
+2024-09-23 09:01:59,609 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:01:59,869 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Fountainai-Book/contents/chapters/chapter15.md HTTP/11" 200 None
+2024-09-23 09:01:59,870 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 09:02:00,118 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/Fountainai-Book/git/blobs/17b2f09fb1ea1e551317a6d519106b2ab721165d HTTP/11" 206 3921
+2024-09-23 10:04:06,489 - INFO - Fetching repository tree for fountainai-fastapi-proxy by Contexter
+2024-09-23 10:04:06,491 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 10:04:06,703 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/trees/main?recursive=1 HTTP/11" 200 732
+2024-09-23 10:04:10,077 - INFO - Fetching file content for main.py in fountainai-fastapi-proxy by Contexter
+2024-09-23 10:04:10,078 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 10:04:10,383 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/contents/main.py HTTP/11" 200 None
+2024-09-23 10:04:10,385 - DEBUG - Starting new HTTPS connection (1): api.github.com:443
+2024-09-23 10:04:10,600 - DEBUG - https://api.github.com:443 "GET /repos/Contexter/fountainai-fastapi-proxy/git/blobs/cf2efd81b2c8aae7bf9074194661445910bd0df7 HTTP/11" 200 None
