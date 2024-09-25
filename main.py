@@ -1,19 +1,19 @@
 import os
 from fastapi import FastAPI, HTTPException, Query
 import requests
-from typing import Optional
+from typing import Optional, List
 import logging
 
 # Set up FastAPI app with OpenAPI versioning and custom settings
 app = FastAPI(
-    title="FountainAI GitHub Repository File Content API",
-    version="1.1.0",
-    description="This API enables efficient retrieval and management of file content from GitHub repositories. It returns file paths in the same format as GitHub's 'Copy file path' feature.",
+    title="FountainAI GitHub Repository Proxy API (GraphQL GitHub Issues)",
+    version="2.0.0",
+    description="This API allows dynamic interaction with GitHub repositories, including file management, commit history, and GitHub Issues using GraphQL for issue management.",
     openapi_version="3.1.0",
     servers=[
         {
             "url": "https://proxy.fountain.coach",
-            "description": "Production server"
+            "description": "Production server for managing GitHub repositories and issues"
         }
     ]
 )
@@ -35,18 +35,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# Helper function to make requests to GitHub API using the token from env variables
-def github_request(endpoint: str, headers=None):
-    url = f"{GITHUB_API_URL}/{endpoint}"
-    if headers is None:
-        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {GITHUB_TOKEN}"}
-    response = requests.get(url, headers=headers)
-    if response.status_code not in [200, 206]:
-        logging.error(f"GitHub API error: {response.status_code}, {response.text}")
-        raise HTTPException(status_code=response.status_code, detail=response.text)
-    return response
-
-# Helper function to query GitHub GraphQL API
+# Helper function to make GraphQL requests to GitHub
 def github_graphql_query(query: str, variables: dict = {}):
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -54,13 +43,163 @@ def github_graphql_query(query: str, variables: dict = {}):
     }
     response = requests.post(GITHUB_GRAPHQL_API_URL, json={"query": query, "variables": variables}, headers=headers)
     if response.status_code != 200:
+        logging.error(f"GraphQL API error: {response.status_code}, {response.text}")
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
 
-# Root endpoint with welcome message
-@app.get("/", summary="Welcome")
-def welcome():
-    return {"message": "Welcome to FountainAI GitHub Repository File Content API"}
+# Helper function to make REST requests to GitHub API using the token from env variables
+def github_request(endpoint: str, method="GET", headers=None, json_data=None):
+    url = f"{GITHUB_API_URL}/{endpoint}"
+    if headers is None:
+        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {GITHUB_TOKEN}"}
+    
+    if method == "GET":
+        response = requests.get(url, headers=headers)
+    elif method == "POST":
+        response = requests.post(url, headers=headers, json=json_data)
+    elif method == "PATCH":
+        response = requests.patch(url, headers=headers, json=json_data)
+    elif method == "PUT":
+        response = requests.put(url, headers=headers, json=json_data)
+    elif method == "DELETE":
+        response = requests.delete(url, headers=headers)
+
+    if response.status_code not in [200, 201, 204]:
+        logging.error(f"GitHub API error: {response.status_code}, {response.text}")
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+    return response
+
+# ------- ROOT Welcome -------
+@app.get("/",
+    operation_id="welcomeMessage",
+    summary="Welcome to the GitHub Repository Proxy API",
+    description="Provides a simple welcome message and confirms that the API is operational."
+)
+def root():
+    return {"message": "Welcome to FountainAI GitHub Repository Proxy API. Manage your repositories and issues dynamically."}
+
+# ------- GraphQL-Based GitHub Issues Operations -------
+
+# Query to list issues with GraphQL
+@app.get("/repos/{owner}/{repo}/issues",
+    operation_id="listGitHubIssuesGraphQL",
+    summary="List GitHub issues using GraphQL",
+    description="This endpoint uses GraphQL to retrieve a list of GitHub issues for the specified repository, allowing flexible data retrieval."
+)
+def list_issues(owner: str, repo: str, first: int = 10, after: Optional[str] = None):
+    query = """
+    query($owner: String!, $repo: String!, $first: Int!, $after: String) {
+      repository(owner: $owner, name: $repo) {
+        issues(first: $first, after: $after) {
+          edges {
+            node {
+              title
+              body
+              state
+              createdAt
+              author {
+                login
+              }
+            }
+            cursor
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+        }
+      }
+    }
+    """
+    variables = {"owner": owner, "repo": repo, "first": first, "after": after}
+    result = github_graphql_query(query, variables)
+    
+    issues = []
+    for edge in result["data"]["repository"]["issues"]["edges"]:
+        issues.append({
+            "title": edge["node"]["title"],
+            "body": edge["node"]["body"],
+            "state": edge["node"]["state"],
+            "createdAt": edge["node"]["createdAt"],
+            "author": edge["node"]["author"]["login"],
+            "cursor": edge["cursor"]
+        })
+
+    page_info = result["data"]["repository"]["issues"]["pageInfo"]
+    
+    return {
+        "issues": issues,
+        "pageInfo": {
+            "endCursor": page_info["endCursor"],
+            "hasNextPage": page_info["hasNextPage"]
+        }
+    }
+
+# Query to create an issue with GraphQL
+@app.post("/repos/{owner}/{repo}/issues",
+    operation_id="createGitHubIssueGraphQL",
+    summary="Create a new GitHub issue using GraphQL",
+    description="This endpoint uses GraphQL to create a new issue in the specified repository. The title and optional body can be provided."
+)
+def create_issue(owner: str, repo: str, title: str, body: Optional[str] = None):
+    query = """
+    mutation($repoId: ID!, $title: String!, $body: String) {
+      createIssue(input: {repositoryId: $repoId, title: $title, body: $body}) {
+        issue {
+          id
+          title
+          body
+          createdAt
+        }
+      }
+    }
+    """
+    
+    # First, we need to fetch the repository ID using GraphQL
+    repo_query = """
+    query($owner: String!, $repo: String!) {
+      repository(owner: $owner, name: $repo) {
+        id
+      }
+    }
+    """
+    repo_result = github_graphql_query(repo_query, {"owner": owner, "repo": repo})
+    repo_id = repo_result["data"]["repository"]["id"]
+
+    variables = {"repoId": repo_id, "title": title, "body": body or ""}
+    result = github_graphql_query(query, variables)
+    
+    return result["data"]["createIssue"]["issue"]
+
+# Query to update an issue with GraphQL
+@app.patch("/repos/{owner}/{repo}/issues/{issue_number}",
+    operation_id="updateGitHubIssueGraphQL",
+    summary="Update a GitHub issue using GraphQL",
+    description="This endpoint uses GraphQL to update the title or body of an existing issue in the specified repository."
+)
+def update_issue(owner: str, repo: str, issue_number: int, title: Optional[str] = None, body: Optional[str] = None):
+    query = """
+    mutation($issueId: ID!, $title: String!, $body: String!) {
+      updateIssue(input: {id: $issueId, title: $title, body: $body}) {
+        issue {
+          id
+          title
+          body
+        }
+      }
+    }
+    """
+
+    # First, we need to fetch the issue ID using REST API to map the issue number to the issue ID
+    issue_data = github_request(f"repos/{owner}/{repo}/issues/{issue_number}")
+    issue_id = issue_data["node_id"]
+
+    variables = {"issueId": issue_id, "title": title or issue_data["title"], "body": body or issue_data["body"]}
+    result = github_graphql_query(query, variables)
+    
+    return result["data"]["updateIssue"]["issue"]
+
+# ------- Existing REST-Based File and Commit Operations -------
 
 # Fetch the repository directory structure (recursive tree)
 @app.get("/repo/{owner}/{repo}/tree",
